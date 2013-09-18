@@ -1,0 +1,76 @@
+
+
+-- Generalized Trees
+data GenTree : (* -> *) -> * -> *
+       = {Branch : (\/ m:*->*, a: * . a -> m (GenTree m a) -> GenTree m a ) }
+
+
+-- Generalized Zip  
+data ListT : *
+ = {OneT  : * -> ListT
+   ;ConsT : * -> ListT -> ListT}
+
+let mapT : (* -> *) -> ListT -> ListT
+ = \f:(*->*).\ts : ListT.
+   case ts of
+   {OneT  t     => OneT (f t)
+   ;ConsT t  r  => ConsT (f t) (mapT f r)}
+
+let prodT : ListT -> *
+ = \ts : ListT.
+   case ts of
+   {OneT  t     => t
+   ;ConsT t  r  => PairT t (prodT r)}
+
+let zip : |~|a:*,b:* . (List a) -> (List b) -> (List (PairT a b))
+ = \a:*,b:*,as:(List a),bs:(List b).
+   case as of 
+   {Nil t         => Nil (PairT a b)
+   ;Cons t ae ar  => case bs of
+                     {Nil  t        => Nil (PairT a b)
+                     ;Cons tt be br => Cons (PairT a b) (Pair a b ae be) (zip a b ar br)}}
+            
+let zipT : |~|ts:ListT . prodT (mapT List ts) -> List (prodT ts)
+ = \ts: ListT.
+   \xs: (prodT (mapT List ts)).  
+   case ts of
+   {OneT t            => xs
+   ;ConsT t' ts'      => 
+    case xs of
+    {Pair t1 t2 ys pys => zip t' (prodT ts') ys (zipT ts' pys)}
+   } : List (prodT ts)    
+
+
+
+let lt : ListT = ConsT Bool (ConsT Nat (OneT Int))
+let listOfBool : List Bool = Cons Bool True (Cons Bool False (Nil Bool))
+let listOfNat  : List Nat  = Cons Nat  Zero (Cons Nat  Zero  (Nil Nat))
+let listOfInt  : List Int  = Cons Int  1    (Cons Int  2     (Nil Int))
+let prodOfList : PairT (List Bool) (PairT (List Nat) (List Int))
+  = Pair (List Bool) (PairT (List Nat) (List Int)) listOfBool (Pair (List Nat) (List Int) listOfNat listOfInt)
+
+--let main : List (prodT lt)
+--  = zipT lt prodOfList
+
+-- Existential Types
+
+data E : * 
+ = { EC : \/a:* . a -> (a -> Bool) -> E }
+ 
+let apply : E -> Bool
+ = \e : E .
+   case e of
+   {EC t x f => f x}
+   
+let ex1 : E
+ = EC Nat (Succ Zero) isZero
+
+let ex2 : E 
+ = EC (List Int) (Nil Int) (isEmpty Int)
+
+let exList : List E
+  = Cons E ex1 (Cons E ex2 (Nil E))
+
+let main : List Bool =
+ map E Bool apply exList
+  

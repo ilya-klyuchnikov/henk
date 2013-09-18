@@ -1,0 +1,126 @@
+-- Existential Types
+data E : *
+    = {EC : \/a:*. a -> (a->Bool)-> E}
+
+
+-- Booleans
+data Bool : *
+        = { True : Bool
+          ;  False : Bool
+          }
+
+let not : Bool -> Bool
+   = \b:Bool.
+     case b of
+     { True  => False
+     ; False => True} : Bool
+
+let and : Bool -> Bool -> Bool
+  = \b1:Bool,b2:Bool.
+    case b1 of
+    {True  => case b2 of {True => True; False => False} : Bool
+    ;False => False}
+
+let or : Bool -> Bool -> Bool
+  = \b1:Bool,b2:Bool.
+    case b1 of
+    {True  => True
+    ;False => case b2 of {True => True; False => False} : Bool}
+
+-- Natural Numbers
+data Nat : *
+      = { Zero : Nat
+        ; Succ : Nat -> Nat}
+
+let  iterate: \/a:*. Nat -> (a->a) -> (a->a)
+         = /\a:*.\n:Nat.\f:a->a.
+           case n of
+           {Zero      => f
+           ;Succ m    => \x:a. (iterate a m f (f x))
+           }
+
+let isZero : Nat -> Bool
+ = \n:Nat .
+   case n of
+   {Zero   => True
+   ;Succ n => False}
+
+let One:Nat = Succ Zero
+
+let add : Nat -> Nat -> Nat
+        = \n1:Nat,n2:Nat.
+          case n1 of
+          {Zero     => n2
+          ;Succ n1' => Succ (add n1' n2)}
+
+
+-- lists
+data List: (* -> *)
+    = { Nil: (\/a. (List a))
+      ; Cons : (\/a. a -> List a -> List a)
+      }
+
+let isEmpty : (\/a:*. (List a) -> Bool)
+        = /\a:*.\xs: List a .
+        case xs of
+        { Nil  t       => True
+        ; Cons t x xx  => False
+        }
+
+let  map: (\/a, b. (a -> b) -> List a -> List b)
+        = /\a, b.
+          \f: (a->b), xs:(List a).
+              case (xs) of
+              { Nil t         => Nil b
+              ; Cons t x xx   => Cons b (f x) (map a b f xx)
+              }
+
+
+
+let  append: (\/a. |~|_dummy:(List a).|~|_:(List a).List a)
+           = /\a.\xs:(List a), ys:(List a).
+              case xs of
+              { Nil  t => ys
+              ; Cons t x xx => Cons a x (append t xx ys)
+              }
+
+
+
+
+let  reverse: (\/a. List a -> List a)
+              = /\a.\xs:(List a).
+                 case xs of
+                 { Nil  t        => Nil a
+                 ; Cons t x xx   => append a (reverse a xx) (Cons a x (Nil a))
+                 }
+
+
+
+-- Trees
+data Tree: (*->*)
+ = { Leaf : (\a:*.(Tree a))
+   ; Bin  : (\a:*. Tree a -> Tree a -> Tree a)}
+
+
+
+-- Products
+data PairT : (*->*->*)
+        = { Pair : (\/a:*,b:*. a -> b -> PairT a b)}
+
+let fst : \/a,b . (PairT a b) -> a
+   = \a,b:*,p:PairT a b.
+     case p of
+     {Pair a b x y => x}
+
+let snd : \/a,b . (PairT a b) -> b
+   = \a,b:*,p:PairT a b.
+     case p of
+     {Pair a b x y => y}
+
+-- Either
+data Either : (* -> * -> *)
+        = { Left:  (\/a, b. a -> Either a b)
+          ; Right:  (\/a, b. b -> Either a b)
+          }
+
+
