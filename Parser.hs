@@ -68,7 +68,6 @@ module Parser(
 
 import ParseError
 import qualified Control.Applicative as CAP
-import Control.Monad
 import Data.Char
 
 
@@ -284,6 +283,14 @@ parserReply result
         Empty reply    -> reply
 
 
+instance Functor Reply where
+  fmap f (Ok x state err) = let fx = f x in seq fx (Ok fx state err)
+  fmap f (Error err) = (Error err)
+
+instance Functor Processed where
+  fmap f (Consumed x) = Consumed (f x)
+  fmap f (Empty x)    = Empty (f x)
+
 -----------------------------------------------------------
 -- Functor: fmap
 -----------------------------------------------------------
@@ -300,35 +307,33 @@ instance Functor Parser where
             Ok x state err -> let fx = f x
                               in seq fx (Ok fx state err)
             Error err      -> Error err
+  -- alternative via functors:
+  -- fmap f (PT p) = PT (fmap (fmap f) . p)
 
 
 -----------------------------------------------------------
 -- Monad: return, sequence (>>=) and fail
 -----------------------------------------------------------
 instance Applicative Parser where
-  pure  = undefined
+  pure x = PT (\state -> Empty (Ok x state (unknownError state)))
   (<*>) = undefined
 
 instance Monad Parser where
-  return x
-    = PT (\state -> Empty (Ok x state (unknownError state)))
-
-  (PT p) >>= f
+  (PT p) >>= next
     = PT (\state ->
         case (p state) of
           Consumed reply1
-            -> Consumed $
-               case (reply1) of
-                 Ok x state1 err1 -> case runP (f x) state1 of
-                                       Empty reply2    -> mergeErrorReply err1 reply2
-                                       Consumed reply2 -> reply2
-                 Error err1       -> Error err1
+            -> case (reply1) of
+                 Ok x state1 err1 -> case runP (next x) state1 of
+                                       Empty reply2    -> Consumed (mergeErrorReply err1 reply2)
+                                       Consumed reply2 -> Consumed reply2
+                 Error err1       -> Consumed (Error err1)
 
           Empty reply1
             -> case (reply1) of
-                 Ok x state1 err1 -> case runP (f x) state1 of
-                                       Empty reply2 -> Empty (mergeErrorReply err1 reply2)
-                                       other        -> other
+                 Ok x state1 err1 -> case runP (next x) state1 of
+                                       Empty reply2    -> Empty (mergeErrorReply err1 reply2)
+                                       Consumed reply2 -> Consumed reply2
                  Error err1       -> Empty (Error err1)
       )
 
@@ -348,7 +353,7 @@ mergeErrorReply err1 reply
 -- MonadPlus: alternative (mplus) and mzero
 -----------------------------------------------------------
 pzero :: Parser a
-pzero = mzero
+pzero = CAP.empty
 
 instance CAP.Alternative Parser where
   empty
@@ -363,7 +368,12 @@ instance CAP.Alternative Parser where
           other             -> other
       )
 
-instance MonadPlus Parser
+mzero :: Parser a
+mzero = CAP.empty
+
+mplus :: Parser a -> Parser a -> Parser a
+mplus = (CAP.<|>)
+--instance MonadPlus Parser
 
 -----------------------------------------------------------
 -- Primitive Parsers:
