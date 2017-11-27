@@ -53,7 +53,6 @@ updatePos pos@(SourcePos name line column) c
       case c of
         '\n' -> SourcePos name (line+1) 1
         '\r' -> pos
-        '\t' -> SourcePos name line (column + 8 - ((column-1) `mod` 8))
         _    -> SourcePos name line (column + 1)
 
 
@@ -154,6 +153,7 @@ instance Show ParseError where
 
 
 -- Language independent show function
+showErrorMessages :: String -> String -> String -> String -> String -> [Message] -> String
 showErrorMessages msgOr msgUnknown msgExpecting msgUnExpected msgEndOfInput msgs
     | null msgs = msgUnknown
     | otherwise = concat $ map ("\n"++) $ clean $

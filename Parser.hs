@@ -47,7 +47,7 @@ module Parser(
              , notFollowedBy
 
              --language dependent character parsers
-             , letter, alphaNum, lower, upper, newline, tab
+             , letter, alphaNum, lower, upper, newline
              , digit, hexDigit, octDigit
              , space, spaces
              , char, anyChar
@@ -95,7 +95,6 @@ spaces              = skipMany space       <?> "white space"
 space               = satisfy (isSpace)     <?> "space"
 
 newline             = char '\n'             <?> "new-line"
-tab                 = char '\t'             <?> "tab"
 
 upper               = satisfy (isUpper)     <?> "uppercase letter"
 lower               = satisfy (isLower)     <?> "lowercase letter"
