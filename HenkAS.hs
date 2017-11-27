@@ -4,7 +4,7 @@ module HenkAS where
 
 -- The Program
 data Program
-  = Program [TDeclaration] [VDeclaration]
+  = Prog [TDeclaration] [VDeclaration]
     deriving (Show,Eq)
 
 -- Data Type Declaration

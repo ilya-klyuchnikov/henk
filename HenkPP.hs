@@ -26,7 +26,7 @@ tVar2string = (render.boundVar)
 -- The Program
 ----------------------------------------------------------------
 program :: Program -> Doc
-program (Program tds vds) =    vsep (map tDecl tds)
+program (Prog tds vds) =    vsep (map tDecl tds)
                             $$ vsep (map vDecl vds)
 
 ----------------------------------------------------------------

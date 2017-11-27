@@ -73,14 +73,14 @@ lookup' v = do {ann <- getAnn
 -- Program
 --------------------------------------------------------------------------------
 program :: Program -> TI (Program,Annotations)
-program p@(Program tds vds) =
+program p@(Prog tds vds) =
  do{(tds,anns)    <- mapAndUnzipM (\td -> tDeclIdent p td) tds
    ;(tds,annss)   <- mapAndUnzipM (\td-> withAnns anns (tDeclBody p td)) tds
    ;anns          <- return $ concat annss ++ anns
    ;(vds,anns2)   <- help p vds anns
    ;anns          <- return $ anns2 ++ anns
    ; vds          <- mapM (\vd-> withAnns anns (vDeclBody p vd)) vds
-   ;return $ (Program tds vds,anns)
+   ;return $ (Prog tds vds,anns)
    }
 
 

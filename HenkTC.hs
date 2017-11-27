@@ -51,7 +51,7 @@ type TypeCheck a b = DeltaRules -> Specification -> a -> TC b
 -- Program
 --------------------------------------------------------------------------------
 program :: TypeCheck Program ()
-program  dr sp (Program tds vds) = do{tds <- mapM (tDecl dr sp) tds
+program  dr sp (Prog tds vds) = do{tds <- mapM (tDecl dr sp) tds
                                     ;vds <- mapM (vDecl dr sp) vds
                                     ;return $ () }
 

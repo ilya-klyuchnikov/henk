@@ -13,7 +13,7 @@ program :: Parser Program
 program =  do{whiteSpace
              ;(tds,vds) <- manyAlternate tDecl vDecl
              ;eof
-             ;return $ Program tds vds
+             ;return $ Prog tds vds
              }
 
 manyAlternate :: Parser a -> Parser b -> Parser ([a],[b])

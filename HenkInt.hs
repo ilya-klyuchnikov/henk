@@ -27,7 +27,7 @@ intmain deltaRules program
 -- Delta Rules
 --------------------------------------------------------------------------------
 prog2DeltaRules :: Program -> DeltaRules
-prog2DeltaRules (Program _ vdecls) = map vDecl2DeltaRule vdecls
+prog2DeltaRules (Prog _ vdecls) = map vDecl2DeltaRule vdecls
 
 vDecl2DeltaRule :: VDeclaration -> DeltaRule
 vDecl2DeltaRule (VDecl tv ex)  = DeltaRule tv ex
