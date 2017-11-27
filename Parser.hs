@@ -437,22 +437,20 @@ string :: String -> Parser String
 string str
     = PT (\ (ST input pos) -> walkAll input pos) where
         walkAll input pos = walk1 str input where
-          ok cs             = let newpos   = updatePosString pos str
-                                  newstate = ST cs newpos
-                              in seq newpos $ seq newstate $
-                                 (Ok str newstate (newErrorUnknown newpos))
+          ok cs               = let newpos   = updatePosString pos str
+                                    newstate = ST cs newpos
+                                in seq newpos $ seq newstate $
+                                   (Ok str newstate (newErrorUnknown newpos))
 
-          errEof            = Error (setErrorMessage (Expect (show str))
+          errEof              = Error (setErrorMessage (Expect (show str))
                                        (newErrorMessage (SysUnExpect "") pos))
-          errExpect c       = Error (setErrorMessage (Expect (show str))
+          errExpect c         = Error (setErrorMessage (Expect (show str))
                                        (newErrorMessage (SysUnExpect (show [c])) pos))
 
-          walk [] cs        = ok cs
-          walk xs []        = errEof
-          walk (x:xs) (c:cs)| x == c        = walk xs cs
-                            | otherwise     = errExpect c
+          walk [] cs          = ok cs
+          walk xs []          = errEof
+          walk (x:xs) (c:cs)  = if x == c then walk xs cs else errExpect c
 
-          walk1 [] cs        = Empty (ok cs)
-          walk1 xs []        = Empty (errEof)
-          walk1 (x:xs) (c:cs)| x == c        = Consumed (walk xs cs)
-                             | otherwise     = Empty (errExpect c)
+          walk1 [] cs         = Empty (ok cs)
+          walk1 xs []         = Empty (errEof)
+          walk1 (x:xs) (c:cs) = if x == c then Consumed (walk xs cs) else Empty (errExpect c)
