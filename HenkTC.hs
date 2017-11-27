@@ -17,6 +17,13 @@ type Errors      = [Error]
 
 newtype TC t = TC (Errors,t)
 
+instance Functor TC where
+  fmap f (TC (es, ts)) = TC (es, f ts)
+
+instance Applicative TC where
+  pure t = TC ([], t)
+  (TC (err1, f)) <*> (TC (err2, t)) = (TC (err1 ++ err2, f t))
+
 instance Monad TC where
  return x    = TC ([],x)
  f >>= g     = TC (let TC (erf,x)     = f 

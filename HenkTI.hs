@@ -22,6 +22,16 @@ tVar2Ann (TVar v ex) = (v,ex)
 -------------------------------------------------------------------------------- 
 newtype TI t = TI (Annotations -> (Errors,t) )
 
+instance Functor TI where
+  fmap f (TI g) = TI (\as -> case (g as) of (es, ts) -> (es, f ts))
+
+instance Applicative TI where
+  pure t = TI (\x -> ([], t))
+  (TI f) <*> (TI g) = TI (\ann -> let (err1, t1) = f ann
+                                      (err2, t2) = g ann
+                                  in
+                                  (err1 ++ err2, t1 t2))
+
 instance Monad TI where
  return x      = TI (\ann -> ([],x) )
  TI f >>= g    = TI (\ann -> let  (erf,ta)        = f ann
