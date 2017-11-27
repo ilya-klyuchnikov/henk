@@ -87,7 +87,6 @@ messageToEnum msg
                   UnExpect _    -> 1
                   Expect _      -> 2
                   Message _     -> 3                                  
-                  _             -> error "ParseError.messageToEnum: no match"
                                       
 messageCompare msg1 msg2
     = compare (messageToEnum msg1) (messageToEnum msg2)
@@ -97,7 +96,6 @@ messageString msg
                   UnExpect s    -> s
                   Expect s      -> s
                   Message s     -> s                                  
-                  _             -> error "ParseError.messageToEnum: no match"
 
 messageEq msg1 msg2
     = (messageCompare msg1 msg2 == EQ)
