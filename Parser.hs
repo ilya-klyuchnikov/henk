@@ -225,12 +225,12 @@ getInput            = do{ state <- getState; return (stateInput state) }
 
 
 setPosition :: SourcePosition -> Parser ()
-setPosition pos     = do{ updateState (\(State input _) -> State input pos)
+setPosition pos     = do{ updateState (\(ST input _) -> ST input pos)
                         ; return ()
                         }
 
 setInput :: Source -> Parser ()
-setInput input      = do{ updateState (\(State _ pos)   -> State input pos)
+setInput input      = do{ updateState (\(ST _ pos)   -> ST input pos)
                         ; return ()
                         }
 
@@ -244,7 +244,7 @@ setState state      = updateState (const state)
 -- Parser definition.
 -----------------------------------------------------------
 data Parser a       = PT (State -> Processed (Reply a))
-runP (PT p)     = p
+runP (PT p)         = p
 
 data Processed a    = Consumed a                --input is consumed
                     | Empty !a                  --no input is consumed
@@ -252,9 +252,9 @@ data Processed a    = Consumed a                --input is consumed
 data Reply a        = Ok !a !State ParseError   --parsing succeeded with @a@
                     | Error ParseError          --parsing failed
 
-data State          = State { stateInput :: !Source
-                            , statePos   :: !SourcePosition
-                            }
+data State          = ST { stateInput :: !Source
+                         , statePos   :: !SourcePosition
+                         }
 type Source         = String
 
 
@@ -274,7 +274,7 @@ parseFromFile p fname
 
 parse :: Parser a -> SourceName -> Source -> Either ParseError a
 parse p name input
-    = case parserReply (runP p (State input (initialPos name))) of
+    = case parserReply (runP p (ST input (initialPos name))) of
         Ok x _ _    -> Right x
         Error err   -> Left err
 
@@ -371,7 +371,7 @@ instance MonadPlus Parser
 -----------------------------------------------------------
 try :: Parser a -> Parser a
 try (PT p)
-    = PT (\state@(State input pos) ->
+    = PT (\state@(ST input pos) ->
         case (p state) of
           Consumed (Error err)  -> Empty (Error (setErrorPos pos err))
           Consumed ok           -> Empty ok
@@ -383,10 +383,10 @@ token p --obsolete, use "try" instead
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy test
-    = PT (\state@(State input pos) ->
+    = PT (\state@(ST input pos) ->
         case input of
           (c:cs) | test c    -> let newpos   = updatePos pos c
-                                    newstate = State cs newpos
+                                    newstate = ST cs newpos
                                 in seq newpos $ seq newstate $
                                    Consumed (Ok c newstate (newErrorUnknown newpos))
                  | otherwise -> Empty (sysUnExpectError (show [c]) pos)
@@ -432,10 +432,10 @@ string s            = scan s
 
 string :: String -> Parser String
 string s
-    = PT (\state@(State input pos) ->
+    = PT (\state@(ST input pos) ->
        let
         ok cs             = let newpos   = updatePosString pos s
-                                newstate = State cs newpos
+                                newstate = ST cs newpos
                             in seq newpos $ seq newstate $
                                (Ok s newstate (newErrorUnknown newpos))
 
