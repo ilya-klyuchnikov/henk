@@ -34,11 +34,11 @@ data Expr
 
 -- Typed Variable
 data TVar
- = TVar Var Expr
+ = TVar Variable Expr
    deriving (Show,Eq)
 
 -- Variable
-data Var
+data Variable
  = Var String
  | Anonymous
  deriving (Show,Eq)

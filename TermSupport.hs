@@ -170,7 +170,7 @@ instance StrongSubstC Expr where
   exrest                                          -> exrest
 
 
-freshFreeVars :: [Var]
+freshFreeVars :: [Variable]
 freshFreeVars = [Var $ "v"++(show i) | i <-[1..]]
 
 lamSStrongSubst :: SSubst -> Expr -> Expr
@@ -263,7 +263,7 @@ equal _ _                                     = False
 ---------------------------------------------------------------------------------
 
 class FreeVars t
-  where exFreeVars :: t -> [Var]
+  where exFreeVars :: t -> [Variable]
 
 instance FreeVars Expr where
  exFreeVars expr = case expr of

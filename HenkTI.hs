@@ -9,7 +9,7 @@ import HenkParser(single_expr)
 import HenkPP(expr2string)
 trace x y = y
 
-type Annotation  = (Var,Expr)
+type Annotation  = (Variable,Expr)
 type Annotations = [Annotation]
 type Error       = String
 type Errors      = [String]
@@ -62,7 +62,7 @@ withAnns anns' (TI f) = (TI (\anns -> f (anns'++anns)))
 getAnn :: TI Annotations
 getAnn = TI (\ann -> ([],ann))
 
-lookup' :: Var -> TI Expr
+lookup' :: Variable -> TI Expr
 lookup' v = do {ann <- getAnn
                ;case lookup v ann of
                      Just ex -> return ex

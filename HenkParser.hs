@@ -156,12 +156,12 @@ varExpr = do{tv <- boundVar
 ----------------------------------------------------------------
 -- Variable
 ----------------------------------------------------------------
-var :: Parser Var
+var :: Parser Variable
 var = do{v <- identifier
         ;return $ Var v
         }
 
-anonymousvar :: Parser Var
+anonymousvar :: Parser Variable
 anonymousvar =
       do{symbol "_"
         ;v <- option "" identifier

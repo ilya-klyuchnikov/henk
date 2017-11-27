@@ -10,7 +10,7 @@ program2string = (render.program)
 expr2string :: Expr -> String
 expr2string = (render.expr)
 
-var2string :: Var -> String
+var2string :: Variable -> String
 var2string = (render.var)
 
 tVar2string :: TVar -> String
@@ -131,7 +131,7 @@ boundVar tv = case tv of
    TVar v e               -> var v -- <> text ":" <> expr e
 
 
-var :: Var -> Doc
+var :: Variable -> Doc
 var v = case v of
  Var n     -> text n
  Anonymous -> text "_"
