@@ -104,18 +104,18 @@ messageEq msg1 msg2
 -----------------------------------------------------------
 -- Parse Errors
 -----------------------------------------------------------
-data ParseError     = ParseError !SourcePosition [Message]
+data ParseError     = PError !SourcePosition [Message]
 
 errorPos :: ParseError -> SourcePosition
-errorPos (ParseError pos msgs)
+errorPos (PError pos msgs)
     = pos
 
 errorMessages :: ParseError -> [Message]
-errorMessages (ParseError pos msgs)
+errorMessages (PError pos msgs)
     = sortBy messageCompare msgs
 
 errorIsUnknown :: ParseError -> Bool
-errorIsUnknown (ParseError pos msgs)
+errorIsUnknown (PError pos msgs)
     = null msgs
 
 
@@ -123,24 +123,24 @@ errorIsUnknown (ParseError pos msgs)
 -- Create parse errors
 -----------------------------------------------------------
 newErrorUnknown pos
-    = ParseError pos []
+    = PError pos []
 
 newErrorMessage msg pos
-    = ParseError pos [msg]
+    = PError pos [msg]
 
-addErrorMessage msg (ParseError pos msgs)
-    = ParseError pos (msg:msgs)
+addErrorMessage msg (PError pos msgs)
+    = PError pos (msg:msgs)
 
-setErrorPos pos (ParseError _ msgs)
-    = ParseError pos msgs
+setErrorPos pos (PError _ msgs)
+    = PError pos msgs
 
-setErrorMessage msg (ParseError pos msgs)
-    = ParseError pos (msg:filter (not . messageEq msg) msgs)
+setErrorMessage msg (PError pos msgs)
+    = PError pos (msg:filter (not . messageEq msg) msgs)
 
 
 mergeError :: ParseError -> ParseError -> ParseError
-mergeError (ParseError _ msgs1) (ParseError pos msgs2)
-    = ParseError pos (msgs1 ++ msgs2)
+mergeError (PError _ msgs1) (PError pos msgs2)
+    = PError pos (msgs1 ++ msgs2)
 
 
 
