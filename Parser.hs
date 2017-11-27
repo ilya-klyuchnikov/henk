@@ -243,10 +243,10 @@ setState state      = updateState (const state)
 -----------------------------------------------------------
 -- Parser definition.
 -----------------------------------------------------------
-data Parser a       = Parser (State -> Consumed (Reply a))
-runP (Parser p)     = p
+data Parser a       = PT (State -> Processed (Reply a))
+runP (PT p)     = p
 
-data Consumed a     = Consumed a                --input is consumed
+data Processed a    = Consumed a                --input is consumed
                     | Empty !a                  --no input is consumed
 
 data Reply a        = Ok !a !State ParseError   --parsing succeeded with @a@
@@ -288,8 +288,8 @@ parserReply result
 -- Functor: fmap
 -----------------------------------------------------------
 instance Functor Parser where
-  fmap f (Parser p)
-    = Parser (\state ->
+  fmap f (PT p)
+    = PT (\state ->
         case (p state) of
           Consumed reply -> Consumed (mapReply reply)
           Empty    reply -> Empty    (mapReply reply)
@@ -311,10 +311,10 @@ instance Applicative Parser where
 
 instance Monad Parser where
   return x
-    = Parser (\state -> Empty (Ok x state (unknownError state)))
+    = PT (\state -> Empty (Ok x state (unknownError state)))
 
-  (Parser p) >>= f
-    = Parser (\state ->
+  (PT p) >>= f
+    = PT (\state ->
         case (p state) of
           Consumed reply1
             -> Consumed $
@@ -334,7 +334,7 @@ instance Monad Parser where
 
 
   fail msg
-    = Parser (\state ->
+    = PT (\state ->
         Empty (Error (newErrorMessage (Msg msg) (statePos state))))
 
 
@@ -352,10 +352,10 @@ pzero = mzero
 
 instance CAP.Alternative Parser where
   empty
-    = Parser (\state -> Empty (Error (unknownError state)))
+    = PT (\state -> Empty (Error (unknownError state)))
 
-  (Parser p1) <|> (Parser p2)
-    = Parser (\state ->
+  (PT p1) <|> (PT p2)
+    = PT (\state ->
         case (p1 state) of
           Empty (Error err) -> case (p2 state) of
                                  Empty reply -> Empty (mergeErrorReply err reply)
@@ -370,8 +370,8 @@ instance MonadPlus Parser
 --  try, satisfy, onFail, unexpected and updateState
 -----------------------------------------------------------
 try :: Parser a -> Parser a
-try (Parser p)
-    = Parser (\state@(State input pos) ->
+try (PT p)
+    = PT (\state@(State input pos) ->
         case (p state) of
           Consumed (Error err)  -> Empty (Error (setErrorPos pos err))
           Consumed ok           -> Empty ok
@@ -383,7 +383,7 @@ token p --obsolete, use "try" instead
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy test
-    = Parser (\state@(State input pos) ->
+    = PT (\state@(State input pos) ->
         case input of
           (c:cs) | test c    -> let newpos   = updatePos pos c
                                     newstate = State cs newpos
@@ -395,8 +395,8 @@ satisfy test
 
 
 onFail :: Parser a -> String -> Parser a
-onFail (Parser p) msg
-    = Parser (\state ->
+onFail (PT p) msg
+    = PT (\state ->
         case (p state) of
           Empty reply
             -> Empty $
@@ -410,12 +410,12 @@ onFail (Parser p) msg
 
 updateState :: (State -> State) -> Parser State
 updateState f
-    = Parser (\state -> Empty (Ok state (f state) (unknownError state)))
+    = PT (\state -> Empty (Ok state (f state) (unknownError state)))
 
 
 unexpected :: String -> Parser a
 unexpected msg
-    = Parser (\state -> Empty (Error (newErrorMessage (UnExpect msg) (statePos state))))
+    = PT (\state -> Empty (Error (newErrorMessage (UnExpect msg) (statePos state))))
 
 
 -----------------------------------------------------------
@@ -432,7 +432,7 @@ string s            = scan s
 
 string :: String -> Parser String
 string s
-    = Parser (\state@(State input pos) ->
+    = PT (\state@(State input pos) ->
        let
         ok cs             = let newpos   = updatePosString pos s
                                 newstate = State cs newpos
