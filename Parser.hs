@@ -101,7 +101,7 @@ octDigit            = satisfy (isOctDigit)  <?> "octal digit"
 
 
 -- char c              = satisfy (==c)  <?> show [c]
-char c              = do{ string [c]; return c}  <?> show [c]
+char c              = do { string [c]; return c}  <?> show [c]
 anyChar             = anySymbol
 
 -- string :: String -> Parser String
@@ -386,7 +386,7 @@ token p --obsolete, use "try" instead
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy test
-    = PT (\state@(ST input pos) ->
+    = PT (\(ST input pos) ->
         case input of
           (c:cs) | test c    -> let newpos   = updatePos pos c
                                     newstate = ST cs newpos
@@ -435,26 +435,24 @@ string s            = scan s
 
 string :: String -> Parser String
 string s
-    = PT (\state@(ST input pos) ->
-       let
-        ok cs             = let newpos   = updatePosString pos s
-                                newstate = ST cs newpos
-                            in seq newpos $ seq newstate $
-                               (Ok s newstate (newErrorUnknown newpos))
+    = PT (\ (ST input pos) -> walkAll input pos) where
+        walkAll input pos = walk1 s input where
+          ok cs             = let newpos   = updatePosString pos s
+                                  newstate = ST cs newpos
+                              in seq newpos $ seq newstate $
+                                 (Ok s newstate (newErrorUnknown newpos))
 
-        errEof            = Error (setErrorMessage (Expect (show s))
-                                     (newErrorMessage (SysUnExpect "") pos))
-        errExpect c       = Error (setErrorMessage (Expect (show s))
-                                     (newErrorMessage (SysUnExpect (show [c])) pos))
+          errEof            = Error (setErrorMessage (Expect (show s))
+                                       (newErrorMessage (SysUnExpect "") pos))
+          errExpect c       = Error (setErrorMessage (Expect (show s))
+                                       (newErrorMessage (SysUnExpect (show [c])) pos))
 
-        walk [] cs        = ok cs
-        walk xs []        = errEof
-        walk (x:xs) (c:cs)| x == c        = walk xs cs
-                          | otherwise     = errExpect c
+          walk [] cs        = ok cs
+          walk xs []        = errEof
+          walk (x:xs) (c:cs)| x == c        = walk xs cs
+                            | otherwise     = errExpect c
 
-        walk1 [] cs        = Empty (ok cs)
-        walk1 xs []        = Empty (errEof)
-        walk1 (x:xs) (c:cs)| x == c        = Consumed (walk xs cs)
-                           | otherwise     = Empty (errExpect c)
-
-       in walk1 s input)
+          walk1 [] cs        = Empty (ok cs)
+          walk1 xs []        = Empty (errEof)
+          walk1 (x:xs) (c:cs)| x == c        = Consumed (walk xs cs)
+                             | otherwise     = Empty (errExpect c)
