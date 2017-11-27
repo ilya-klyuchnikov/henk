@@ -13,7 +13,7 @@ expr2string = (render.expr)
 var2string :: Variable -> String
 var2string = (render.var)
 
-tVar2string :: TVar -> String
+tVar2string :: TVariable -> String
 tVar2string = (render.boundVar)
 
 -- just for testing
@@ -118,14 +118,14 @@ alt (Alt tc tcas dcas ex) =
 ----------------------------------------------------------------
 -- Variable
 ----------------------------------------------------------------
-bindVar :: TVar ->  Doc
+bindVar :: TVariable ->  Doc
 bindVar tv = case tv of
  TVar (Var v) (SortExpr Star)          -> text v                         -- un-annotated binding variables have type star
  TVar (Anonymous) (SortExpr Star)      -> text "_"
  TVar (Var v) e                        -> text v   <> text ":" <> expr e
  TVar (Anonymous) e                    -> text "_" <> text ":" <> expr e
 
-boundVar :: TVar ->  Doc
+boundVar :: TVariable ->  Doc
 boundVar tv = case tv of
    TVar v Unknown         -> var v -- <> text ": ? "                     -- the type of un-annotated bound variables should be derived from the context
    TVar v e               -> var v -- <> text ":" <> expr e

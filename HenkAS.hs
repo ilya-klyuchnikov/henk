@@ -12,28 +12,28 @@ data TDeclaration
  = TDecl TCons [DCons]
    deriving (Show,Eq)
 
-type TCons = TVar  -- Type Constructor
-type DCons = TVar  -- Data Constructor
+type TCons = TVariable  -- Type Constructor
+type DCons = TVariable  -- Data Constructor
 
 -- Value Declaration
 data VDeclaration
- = VDecl TVar Expr
+ = VDecl TVariable Expr
    deriving (Show,Eq)
 
 -- Expression
 data Expr
- = LamExpr TVar Expr            -- Lambda Abstraction
- | PiExpr TVar Expr             -- Pi
+ = LamExpr TVariable Expr            -- Lambda Abstraction
+ | PiExpr TVariable Expr             -- Pi
  | AppExpr Expr Expr            -- Application
  | CaseExpr Expr [Alt] Expr     -- Case
- | VarExpr TVar                 -- Typed Variable
+ | VarExpr TVariable                 -- Typed Variable
  | LitExpr Lit                  -- Literal
  | SortExpr Sort                -- Sorts
  | Unknown                      -- for untyped variables
    deriving (Show,Eq)
 
 -- Typed Variable
-data TVar
+data TVariable
  = TVar Variable Expr
    deriving (Show,Eq)
 
@@ -48,8 +48,8 @@ data Alt
  = Alt TCons [TCA] [DCA] Expr
  deriving (Show,Eq)
 
-type TCA = TVar -- type constructor argument
-type DCA = TVar -- data constructor argument
+type TCA = TVariable -- type constructor argument
+type DCA = TVariable -- data constructor argument
 
 -- Literals
 data Lit

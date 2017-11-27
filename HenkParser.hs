@@ -171,7 +171,7 @@ anonymousvar =
 ----------------------------------------------------------------
 -- Binding Variable
 ----------------------------------------------------------------
-bindVar :: Parser TVar
+bindVar :: Parser TVariable
 bindVar = do{v <- (anonymousvar <|> var)
           ;(do {e <- isOfType
                ; return $ TVar v e
@@ -181,7 +181,7 @@ bindVar = do{v <- (anonymousvar <|> var)
           }
           <?> "variable"
 
-bindVar' :: Parser TVar
+bindVar' :: Parser TVariable
 bindVar' = do{v <- (anonymousvar <|> var)
              ;(do {e <- isOfType
                   ; return $ TVar v e
@@ -199,7 +199,7 @@ isOfType =  do{symbol ":"
 ----------------------------------------------------------------
 -- Bound Variable
 ----------------------------------------------------------------
-boundVar :: Parser TVar
+boundVar :: Parser TVariable
 boundVar =  do{v <- var
               ;(do {e <- isOfType
                  ;return $ TVar v e

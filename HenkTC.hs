@@ -237,7 +237,7 @@ litExpr _ _ (LitExpr lit)
 --------------------------------------------------------------------------------
 -- Fancy Error Messages
 --------------------------------------------------------------------------------
-boundVarMsg :: TVar -> Expr -> Error
+boundVarMsg :: TVariable -> Expr -> Error
 boundVarMsg tv@(TVar v tv_type1) tv_type2
  = "Type error in bound variable: " ++ var2string  v ++ "\n" ++
    "Annotation                  : " ++ expr2string tv_type1 ++ "\n" ++
@@ -266,7 +266,7 @@ appMsg2 ex1 ex1_type ex2 ex2_type
    "Type Right Expr             : " ++ expr2string ex2_type          ++ "\n" ++
    "Left expression does not have PI-type!!"                         ++ "\n"
 
-bindMsg :: TVar -> Expr -> Expr -> Expr -> Error
+bindMsg :: TVariable -> Expr -> Expr -> Expr -> Error
 bindMsg tv tv_type ex ex_type
  = "Type error in binding       : " ++ tVar2string tv ++ " = " ++ expr2string ex  ++ "\n" ++
    "Variable                    : " ++ tVar2string tv                ++ "\n" ++

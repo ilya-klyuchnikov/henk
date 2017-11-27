@@ -6,7 +6,7 @@ import Parser()
 --------------------------------------------------------------------------------
 -- Rules
 --------------------------------------------------------------------------------
-data DeltaRule       = DeltaRule TVar Expr
+data DeltaRule       = DeltaRule TVariable Expr
  deriving (Show,Eq)
 type DeltaRules      = [DeltaRule]
 
@@ -37,7 +37,7 @@ isRedex deltaRules expr = case expr of
 
 
 
-lookup'' :: TVar -> DeltaRules -> Maybe DeltaRule
+lookup'' :: TVariable -> DeltaRules -> Maybe DeltaRule
 lookup'' tv@(TVar (Var v) _) (r@(DeltaRule ex1 _):rs) =
  case ex1 of
   (TVar (Var v1) _) | (v1==v)   -> Just r
@@ -111,7 +111,7 @@ leftMostApp expr = case expr of
 -- weak substitution can only be used when there is not risk of
 -- variable capturing
 
-data SSubst         = Sub TVar Expr -- singleton substitution
+data SSubst         = Sub TVariable Expr -- singleton substitution
      deriving Show
 type Subst          = [SSubst]
 

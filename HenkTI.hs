@@ -14,7 +14,7 @@ type Annotations = [Annotation]
 type Error       = String
 type Errors      = [String]
 
-tVar2Ann :: TVar -> Annotation
+tVar2Ann :: TVariable -> Annotation
 tVar2Ann (TVar v ex) = (v,ex)
 
 --------------------------------------------------------------------------------
@@ -123,14 +123,14 @@ vDeclBody p (VDecl tv ex)
       ;return $ VDecl tv ex}
 
 
-bindVar :: Program -> TVar -> TI TVar
+bindVar :: Program -> TVariable -> TI TVariable
 bindVar p tv@(TVar v ex) = case ex of
                            Unknown -> do{addErrorMsg $ "Warning: Unannotated bind variable: "++var2string v
                                         ; return $ TVar v Unknown}
                            _       -> do{ ex <- expr p ex
                                         ; return $ TVar v ex}
 
-boundVar :: Program -> TVar -> TI TVar
+boundVar :: Program -> TVariable -> TI TVariable
 boundVar p tv@(TVar v ex) = case ex of
                             Unknown -> do {ex <- lookup' v;return $ TVar v ex}
                             _       -> do {ex <- expr p ex;return $ TVar v ex}
@@ -172,6 +172,6 @@ alt p (Alt dc tcas dcas res) =
       ;res                 <- withAnns anns (expr p res)
       ;return $ Alt dc tcas dcas res}
 
-match :: Expr -> [TVar] -> [TVar]
+match :: Expr -> [TVariable] -> [TVariable]
 match (PiExpr ptv@(TVar v t) expr) (tv@(TVar v1 _):vs) = (TVar v1 t) : (match (trace (expr2string $  (applyStrongSubst  [Sub ptv $ VarExpr (TVar v1 t)] expr)) (applyStrongSubst  [Sub ptv $ VarExpr (TVar v1 t)] expr)) vs)
 match _ _ = []
