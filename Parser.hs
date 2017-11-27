@@ -58,7 +58,7 @@ module Parser(
              , satisfy
              , try
              , token --obsolete, use try instead
-             , pzero, onFail, unexpected
+             , onFail, unexpected
 
              , getPosition, setPosition
              , getInput, setInput
@@ -67,7 +67,7 @@ module Parser(
              ) where
 
 import ParseError
-import qualified Control.Applicative as CAP
+import Control.Applicative hiding (many, optional)
 import Data.Char
 
 
@@ -77,14 +77,10 @@ import Data.Char
 -- <|>  is the choice operator
 -----------------------------------------------------------
 infix  0 <?>
-infixr 1 <|>
 
 
 (<?>) :: Parser a -> String -> Parser a
 p <?> msg           = onFail p msg
-
-(<|>) :: Parser a -> Parser a -> Parser a
-p1 <|> p2           = mplus p1 p2
 
 
 -----------------------------------------------------------
@@ -352,10 +348,7 @@ mergeErrorReply err1 reply
 -----------------------------------------------------------
 -- MonadPlus: alternative (mplus) and mzero
 -----------------------------------------------------------
-pzero :: Parser a
-pzero = CAP.empty
-
-instance CAP.Alternative Parser where
+instance Alternative Parser where
   empty
     = PT (\state -> Empty (Error (unknownError state)))
 
@@ -369,10 +362,10 @@ instance CAP.Alternative Parser where
       )
 
 mzero :: Parser a
-mzero = CAP.empty
+mzero = empty
 
 mplus :: Parser a -> Parser a -> Parser a
-mplus = (CAP.<|>)
+mplus = (<|>)
 --instance MonadPlus Parser
 
 -----------------------------------------------------------
