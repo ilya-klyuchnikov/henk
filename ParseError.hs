@@ -7,7 +7,7 @@ module ParseError ( SourceName, Line, Column
                   , SourcePosition, sourceLine, sourceColumn, sourceName
                   , newPos, initialPos, updatePos, updatePosString
 
-                  , Message(SysUnExpect,UnExpect,Expect,Message)
+                  , Message(SysUnExpect,UnExpect,Expect,Msg)
                   , messageString, messageCompare, messageEq
 
                   , ParseError, errorPos, errorMessages, errorIsUnknown
@@ -80,13 +80,13 @@ instance Show SourcePosition where
 data Message        = SysUnExpect !String   --library generated unexpect
                     | UnExpect    !String   --unexpected something
                     | Expect      !String   --expecting something
-                    | Message     !String   --raw message
+                    | Msg         !String   --raw message
 
 messageToEnum msg
     = case msg of SysUnExpect _ -> 0
                   UnExpect _    -> 1
                   Expect _      -> 2
-                  Message _     -> 3
+                  Msg _         -> 3
 
 messageCompare msg1 msg2
     = compare (messageToEnum msg1) (messageToEnum msg2)
@@ -95,7 +95,7 @@ messageString msg
     = case msg of SysUnExpect s -> s
                   UnExpect s    -> s
                   Expect s      -> s
-                  Message s     -> s
+                  Msg s         -> s
 
 messageEq msg1 msg2
     = (messageCompare msg1 msg2 == EQ)

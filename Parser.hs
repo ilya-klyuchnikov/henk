@@ -31,7 +31,7 @@ module Parser(
              , ParseError, errorPos, errorMessages
              , SourcePosition, sourceName, sourceLine, sourceColumn
              , SourceName, Source, Line, Column
-             , Message(SysUnExpect,UnExpect,Expect,Message)
+             , Message(SysUnExpect,UnExpect,Expect,Msg)
              , messageString, messageCompare, messageEq, showErrorMessages
 
              --general combinators
@@ -336,7 +336,7 @@ instance Monad Parser where
 
   fail msg
     = Parser (\state ->
-        Empty (Error (newErrorMessage (Message msg) (statePos state))))
+        Empty (Error (newErrorMessage (Msg msg) (statePos state))))
 
 
 mergeErrorReply err1 reply
