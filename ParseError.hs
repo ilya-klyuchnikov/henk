@@ -4,7 +4,7 @@
 -- $version: 23 Feb 2000, release version 0.2$
 -----------------------------------------------------------
 module ParseError ( SourceName, Line, Column
-                  , SourcePos, sourceLine, sourceColumn, sourceName
+                  , SourcePosition, sourceLine, sourceColumn, sourceName
                   , newPos, initialPos, updatePos, updatePosString
 
                   , Message(SysUnExpect,UnExpect,Expect,Message)
@@ -29,11 +29,11 @@ type SourceName     = String
 type Line           = Int
 type Column         = Int
 
-data SourcePos      = SourcePos SourceName !Line !Column
+data SourcePosition = SourcePos SourceName !Line !Column
          deriving (Eq,Ord)
 
 
-newPos :: SourceName -> Line -> Column -> SourcePos
+newPos :: SourceName -> Line -> Column -> SourcePosition
 newPos sourceName line column
     = SourcePos sourceName line column
 
@@ -45,11 +45,11 @@ sourceLine   (SourcePos name line column)   = line
 sourceColumn (SourcePos name line column)   = column
 
 
-updatePosString :: SourcePos -> String -> SourcePos
+updatePosString :: SourcePosition -> String -> SourcePosition
 updatePosString pos string
     = forcePos (foldl updatePos pos string)
 
-updatePos       :: SourcePos -> Char -> SourcePos
+updatePos       :: SourcePosition -> Char -> SourcePosition
 updatePos pos@(SourcePos name line column) c
     = forcePos $
       case c of
@@ -59,12 +59,12 @@ updatePos pos@(SourcePos name line column) c
         _    -> SourcePos name line (column + 1)
 
 
-forcePos :: SourcePos -> SourcePos
+forcePos :: SourcePosition -> SourcePosition
 forcePos pos@(SourcePos name line column)
     = seq line (seq column (pos))
 
 
-instance Show SourcePos where
+instance Show SourcePosition where
   show (SourcePos name line column)
     | null name = showLineColumn
     | otherwise = "\"" ++ name ++ "\" " ++ showLineColumn
@@ -104,9 +104,9 @@ messageEq msg1 msg2
 -----------------------------------------------------------
 -- Parse Errors
 -----------------------------------------------------------
-data ParseError     = ParseError !SourcePos [Message]
+data ParseError     = ParseError !SourcePosition [Message]
 
-errorPos :: ParseError -> SourcePos
+errorPos :: ParseError -> SourcePosition
 errorPos (ParseError pos msgs)
     = pos
 

@@ -11,7 +11,7 @@
     Graham Hutton and Erik Meijer:
     Monadic Parser Combinators.
     Technical report NOTTCS-TR-96-4.
-    Department of Computer Science, University of Nottingham, 1996. 
+    Department of Computer Science, University of Nottingham, 1996.
     http://www.cs.nott.ac.uk/Department/Staff/gmh/monparsing.ps
 
  and:
@@ -29,7 +29,7 @@ module Parser(
              , Parser, parse, parseFromFile
 
              , ParseError, errorPos, errorMessages
-             , SourcePos, sourceName, sourceLine, sourceColumn
+             , SourcePosition, sourceName, sourceLine, sourceColumn
              , SourceName, Source, Line, Column
              , Message(SysUnExpect,UnExpect,Expect,Message)
              , messageString, messageCompare, messageEq, showErrorMessages
@@ -218,14 +218,14 @@ lookAhead p         = do{ state <- getState
 -----------------------------------------------------------
 -- Parser state combinators
 -----------------------------------------------------------
-getPosition :: Parser SourcePos
+getPosition :: Parser SourcePosition
 getPosition         = do{ state <- getState; return (statePos state) }
 
 getInput :: Parser Source
 getInput            = do{ state <- getState; return (stateInput state) }
 
 
-setPosition :: SourcePos -> Parser ()
+setPosition :: SourcePosition -> Parser ()
 setPosition pos     = do{ updateState (\(State input _) -> State input pos)
                         ; return ()
                         }
@@ -254,7 +254,7 @@ data Reply a        = Ok !a !State ParseError   --parsing succeeded with @a@
                     | Error ParseError          --parsing failed
 
 data State          = State { stateInput :: !Source
-                            , statePos   :: !SourcePos
+                            , statePos   :: !SourcePosition
                             }
 type Source         = String
 
