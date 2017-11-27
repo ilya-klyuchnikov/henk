@@ -58,8 +58,6 @@ expr ex = case ex of
  LitExpr l           -> lit l
  SortExpr s          -> sort s
  Unknown             -> text "?"
- otherwise           -> text $ "expr_otherwise " ++ show otherwise
-
 
 right_parents :: Expr -> Doc -> Doc
 right_parents ex d = case ex of

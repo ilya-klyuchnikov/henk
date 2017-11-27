@@ -50,7 +50,6 @@ module Parser(
              , letter, alphaNum, lower, upper, newline, tab
              , digit, hexDigit, octDigit
              , space, spaces
-             , oneOf, noneOf
              , char, anyChar
              , string
              , eof
