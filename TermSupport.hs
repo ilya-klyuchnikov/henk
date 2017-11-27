@@ -133,7 +133,7 @@ instance SubstC Expr where
   CaseExpr expr1 alts t                           -> CaseExpr (applySSubst ssubst expr1) (applySSubst ssubst alts) (applySSubst ssubst t)
   exrest                                          -> exrest
 
-instance SubstC Alt where
+instance SubstC CaseAlt where
  applySSubst ssubst (Alt tc tcas dcas res) = Alt tc tcas dcas (applySSubst ssubst res)
 
 instance SubstC t => SubstC [t] where
@@ -204,7 +204,7 @@ piSStrongSubst ssubst@(Sub (TVar vars _) exprs) (PiExpr tv@(TVar var expr1) expr
   freshFreeVar  = head(filter (\v->not(v `elem` freeVars)) freshFreeVars)
 
 
-instance StrongSubstC Alt where
+instance StrongSubstC CaseAlt where
  applySStrongSubst ssubst (Alt tc tcas dcas res) = Alt tc tcas dcas (applySStrongSubst ssubst res)
 
 instance StrongSubstC t => StrongSubstC [t] where
@@ -276,7 +276,7 @@ instance FreeVars Expr where
   SortExpr _                                      -> []
   Unknown                                         -> []
 
-instance FreeVars Alt where
+instance FreeVars CaseAlt where
  exFreeVars (Alt tc tcas dcas res) = exFreeVars res
 
 

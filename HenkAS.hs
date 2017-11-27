@@ -24,12 +24,12 @@ data VDeclaration
 data Expr
  = LamExpr TVariable Expr            -- Lambda Abstraction
  | PiExpr TVariable Expr             -- Pi
- | AppExpr Expr Expr            -- Application
- | CaseExpr Expr [Alt] Expr     -- Case
+ | AppExpr Expr Expr                 -- Application
+ | CaseExpr Expr [CaseAlt] Expr      -- Case
  | VarExpr TVariable                 -- Typed Variable
- | LitExpr Lit                  -- Literal
- | SortExpr Sort                -- Sorts
- | Unknown                      -- for untyped variables
+ | LitExpr Lit                       -- Literal
+ | SortExpr Sort                     -- Sorts
+ | Unknown                           -- for untyped variables
    deriving (Show,Eq)
 
 -- Typed Variable
@@ -44,7 +44,7 @@ data Variable
  deriving (Show,Eq)
 
 -- Case Alternative
-data Alt
+data CaseAlt
  = Alt TCons [TCA] [DCA] Expr
  deriving (Show,Eq)
 

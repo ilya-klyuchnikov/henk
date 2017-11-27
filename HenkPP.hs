@@ -107,7 +107,7 @@ caseExpr (CaseExpr ex1 as ex)  =     text "case"
                                  -- $$  text ":"
                                  -- <+> expr ex
 
-alt :: Alt -> Doc
+alt :: CaseAlt -> Doc
 alt (Alt tc tcas dcas ex) =
                          boundVar tc
                      <+> (if (null tcas) then (empty) else (comma_sep (map boundVar tcas)))

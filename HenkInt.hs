@@ -52,7 +52,7 @@ reduceCase dr ce@(CaseExpr ex alts _) =
   Nothing                     -> error $ "runtime error: missing alternative (" ++ expr2string (leftMost whnf) ++") in case expression!!\n" ++ (expr2string ce)
  where whnf = reduce_to_whnf dr ex
 
-lookupA :: Expr -> [Alt] -> Maybe Alt
+lookupA :: Expr -> [CaseAlt] -> Maybe CaseAlt
 lookupA ex alts = lookupA' (leftMost ex) alts
 lookupA' ex ((a@(Alt  tc@(TVar va _) _ _ _)):as) = case ex of
  (VarExpr (TVar v _))  | v==va      -> Just  a

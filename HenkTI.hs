@@ -164,7 +164,7 @@ caseExpr p (CaseExpr ex as ct) =
     ;return $ CaseExpr ex as ct}
 
 
-alt :: Program -> Alt -> TI Alt
+alt :: Program -> CaseAlt -> TI CaseAlt
 alt p (Alt dc tcas dcas res) =
     do{dc@(TVar _ dc_type) <- boundVar p dc
       ;as                  <- return $ tcas ++ dcas

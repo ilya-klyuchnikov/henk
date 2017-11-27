@@ -134,7 +134,7 @@ caseExpr = do{reserved "case"
              }
              <?> "Case Expression"
 
-alt :: Parser Alt
+alt :: Parser CaseAlt
 alt = do{tc   <- boundVar
         ;tcas <- many var
   ;tcas <- return $ map (\v -> TVar v Unknown) tcas
