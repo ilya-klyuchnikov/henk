@@ -58,13 +58,13 @@ program  dr sp (Program tds vds) = do{tds <- mapM (tDecl dr sp) tds
 --------------------------------------------------------------------------------
 -- Type Declarations
 --------------------------------------------------------------------------------
-tDecl    :: TypeCheck TDecl ()
+tDecl    :: TypeCheck TDeclaration ()
 tDecl dr sp td@(TDecl tv tvs) = do{mapM (\(TVar _ t) -> expr dr sp t) (tv:tvs)
                                   ;isOfRightForm dr sp td
                                   ;return ()}
 
 
-isOfRightForm :: TypeCheck TDecl ()
+isOfRightForm :: TypeCheck TDeclaration ()
 isOfRightForm dr sp td = return ()
 -- should check whether the ADT is of the form
 -- described in definition 3.2 of the thesis
@@ -73,7 +73,7 @@ isOfRightForm dr sp td = return ()
 --------------------------------------------------------------------------------
 -- Value Declarations
 --------------------------------------------------------------------------------
-vDecl    :: TypeCheck VDecl ()
+vDecl    :: TypeCheck VDeclaration ()
 vDecl dr sp (VDecl tv@(TVar _ tv_type) ex)
  = do {ex_type <- expr dr sp ex
       ;if

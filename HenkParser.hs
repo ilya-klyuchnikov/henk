@@ -26,7 +26,7 @@ manyAlternate pa pb = do{as<-many1 pa; (as',bs') <- manyAlternate pa pb; return 
 ----------------------------------------------------------------
 -- Type Declaration
 ----------------------------------------------------------------
-tDecl :: Parser TDecl
+tDecl :: Parser TDeclaration
 tDecl =  do{reserved "data"
            ;t <- bindVar
            ;symbol "="
@@ -38,10 +38,10 @@ tDecl =  do{reserved "data"
 ----------------------------------------------------------------
 -- Value Declaration
 ----------------------------------------------------------------
-vDecl :: Parser VDecl
+vDecl :: Parser VDeclaration
 vDecl  = letnonrec <?> "value Declaration"
 
-letnonrec :: Parser VDecl
+letnonrec :: Parser VDeclaration
 letnonrec  = do{reserved "let"
                ;tv <- bindVar'
                ;symbol "="

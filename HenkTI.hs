@@ -84,7 +84,7 @@ program p@(Program tds vds) =
    }
 
 
-help :: Program -> [VDecl] -> Annotations -> TI ([VDecl],Annotations)
+help :: Program -> [VDeclaration] -> Annotations -> TI ([VDeclaration],Annotations)
 help p vds anns =
  case vds of
  []      -> return ([],anns)
@@ -95,12 +95,12 @@ help p vds anns =
 --------------------------------------------------------------------------------
 -- Type Declarations
 --------------------------------------------------------------------------------
-tDeclIdent :: Program -> TDecl -> TI (TDecl,Annotation)
+tDeclIdent :: Program -> TDeclaration -> TI (TDeclaration,Annotation)
 tDeclIdent p (TDecl tv tvs)
  = do{tv <- bindVar p tv
      ;return $ ((TDecl tv tvs),tVar2Ann tv)}
 
-tDeclBody    :: Program -> TDecl -> TI (TDecl,Annotations)
+tDeclBody    :: Program -> TDeclaration -> TI (TDeclaration,Annotations)
 tDeclBody p (TDecl tv tvs) =
  do{tvs  <- mapM (\tv -> bindVar p tv) tvs
    ;anns <- return (map tVar2Ann tvs)
@@ -111,13 +111,13 @@ tDeclBody p (TDecl tv tvs) =
 -- Value Declarations
 --------------------------------------------------------------------------------
 
-vDeclIdent :: Program -> VDecl -> TI (VDecl,Annotations)
+vDeclIdent :: Program -> VDeclaration -> TI (VDeclaration,Annotations)
 vDeclIdent p (VDecl tv ex)
  =  do{tv   <- bindVar p tv
       ;return (VDecl tv ex, [tVar2Ann tv])}
 
 
-vDeclBody :: Program -> VDecl -> TI VDecl
+vDeclBody :: Program -> VDeclaration -> TI VDeclaration
 vDeclBody p (VDecl tv ex)
  =  do{ex <- expr p ex
       ;return $ VDecl tv ex}

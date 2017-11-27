@@ -32,7 +32,7 @@ program (Program tds vds) =    vsep (map tDecl tds)
 ----------------------------------------------------------------
 -- Type Declaration
 ----------------------------------------------------------------
-tDecl :: TDecl -> Doc
+tDecl :: TDeclaration -> Doc
 tDecl (TDecl tv tvs) =     text "data"
                        <+> bindVar tv
                        $$  indent (    text "="
@@ -41,7 +41,7 @@ tDecl (TDecl tv tvs) =     text "data"
 ----------------------------------------------------------------
 -- Value Declaration
 ----------------------------------------------------------------
-vDecl :: VDecl -> Doc
+vDecl :: VDeclaration -> Doc
 vDecl (VDecl tv ex) = sep[bindVar tv, text "=" <+> expr ex]
 
 ----------------------------------------------------------------

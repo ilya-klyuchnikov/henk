@@ -4,11 +4,11 @@ module HenkAS where
 
 -- The Program
 data Program
-  = Program [TDecl] [VDecl]
+  = Program [TDeclaration] [VDeclaration]
     deriving (Show,Eq)
 
 -- Data Type Declaration
-data TDecl
+data TDeclaration
  = TDecl TCons [DCons]
    deriving (Show,Eq)
 
@@ -16,7 +16,7 @@ type TCons = TVar  -- Type Constructor
 type DCons = TVar  -- Data Constructor
 
 -- Value Declaration
-data VDecl
+data VDeclaration
  = VDecl TVar Expr
    deriving (Show,Eq)
 
