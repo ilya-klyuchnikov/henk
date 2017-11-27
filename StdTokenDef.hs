@@ -15,7 +15,7 @@ import Parser
 -----------------------------------------------------------
 -- TokenDef
 -----------------------------------------------------------
-data TokenDef  = TokenDef 
+data TokenDef  = TokenDef
                { commentStart   :: String
                , commentEnd     :: String
                , commentLine    :: String
@@ -27,50 +27,50 @@ data TokenDef  = TokenDef
                , reservedNames  :: [String]
                , reservedOpNames:: [String]
                , caseSensitive  :: Bool
-               }                           
-           
+               }
+
 -----------------------------------------------------------
 -- Styles: haskellStyle, javaStyle
------------------------------------------------------------               
-haskellStyle= emptyStyle                      
+-----------------------------------------------------------
+haskellStyle= emptyStyle
                 { commentStart   = "{-"
                 , commentEnd     = "-}"
                 , commentLine    = "--"
                 , nestedComments = True
                 , identStart     = letter
-                , identLetter	 = alphaNum <|> oneOf "_'"
-                , opStart	 = opLetter haskell
-                , opLetter	 = oneOf ":!#$%&*+./<=>?@\\^|-~"              
+                , identLetter   = alphaNum <|> oneOf "_'"
+                , opStart   = opLetter haskell
+                , opLetter   = oneOf ":!#$%&*+./<=>?@\\^|-~"
                 , reservedOpNames= []
                 , reservedNames  = []
-                , caseSensitive  = True                                   
-                }         
-                           
+                , caseSensitive  = True
+                }
+
 javaStyle   = emptyStyle
-		{ commentStart	 = "/*"
-		, commentEnd	 = "*/"
-		, commentLine	 = "//"
-		, nestedComments = True
-		, identStart	 = letter
-		, identLetter	 = alphaNum <|> oneOf "_'"
-		-- fixed set of operators: use 'symbol'
-		, reservedNames  = []
-		, reservedOpNames= []	
-                , caseSensitive  = False				  
-		}
+    { commentStart   = "/*"
+    , commentEnd   = "*/"
+    , commentLine   = "//"
+    , nestedComments = True
+    , identStart   = letter
+    , identLetter   = alphaNum <|> oneOf "_'"
+    -- fixed set of operators: use 'symbol'
+    , reservedNames  = []
+    , reservedOpNames= []
+                , caseSensitive  = False
+    }
 
 -----------------------------------------------------------
 -- Haskell
------------------------------------------------------------               
+-----------------------------------------------------------
 haskellExt  = haskell
-	        { identLetter	 = identLetter haskell <|> char '#'
-	        , reservedNames	 = reservedNames haskell ++ 
-    				   ["foreign","import","export","primitive"
-    				   ,"_ccall_","_casm_"
-    				   ,"forall"
-    				   ]
+          { identLetter   = identLetter haskell <|> char '#'
+          , reservedNames   = reservedNames haskell ++
+               ["foreign","import","export","primitive"
+               ,"_ccall_","_casm_"
+               ,"forall"
+               ]
                 }
-			    
+
 haskell     = haskellStyle
                 { reservedOpNames= ["::","..","=","\\","|","<-","->","@","~","=>"]
                 , reservedNames  = ["let","in","case","of","if","then","else",
@@ -81,25 +81,25 @@ haskell     = haskellStyle
                                     "primitive"
                                     -- "as","qualified","hiding"
                                    ]
-                }         
-                
-                
+                }
+
+
 -----------------------------------------------------------
 -- Mondrian
------------------------------------------------------------               
+-----------------------------------------------------------
 mondrian    = javaStyle
-		{ reservedNames = [ "case", "class", "default", "extends"
-				  , "import", "in", "let", "new", "of", "package"
-				  ]	
-                , caseSensitive  = True				  
-		}
+    { reservedNames = [ "case", "class", "default", "extends"
+          , "import", "in", "let", "new", "of", "package"
+          ]
+                , caseSensitive  = True
+    }
 
-				
+
 -----------------------------------------------------------
 -- minimal token definition
------------------------------------------------------------                
+-----------------------------------------------------------
 emptyStyle
-            = TokenDef 
+            = TokenDef
                { commentStart   = ""
                , commentEnd     = ""
                , commentLine    = ""
@@ -112,4 +112,3 @@ emptyStyle
                , reservedNames  = []
                , caseSensitive  = True
                }
-                

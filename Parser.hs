@@ -3,39 +3,39 @@
 
  $version: 23 Feb 2000, release version 0.2$
 
- Parsec, the Fast Monadic Parser combinator library. 
+ Parsec, the Fast Monadic Parser combinator library.
  http://wwww.cs.uu.nl/~daan/parsec.html
 
  Inspired by:
 
     Graham Hutton and Erik Meijer:
     Monadic Parser Combinators.
-    Technical report NOTTCS-TR-96-4. 
+    Technical report NOTTCS-TR-96-4.
     Department of Computer Science, University of Nottingham, 1996. 
     http://www.cs.nott.ac.uk/Department/Staff/gmh/monparsing.ps
 
  and:
- 
-    Andrew Partridge, David Wright: 
+
+    Andrew Partridge, David Wright:
     Predictive parser combinators need four values to report errors.
     Journal of Functional Programming 6(2): 355-364, 1996
 -----------------------------------------------------------}
 
-module Parser( 
+module Parser(
              --operators: label a parser, alternative
                (<?>), (<|>)
 
              --basic types
              , Parser, parse, parseFromFile
-             
-             , ParseError, errorPos, errorMessages             
-             , SourcePos, sourceName, sourceLine, sourceColumn             
-             , SourceName, Source, Line, Column             
+
+             , ParseError, errorPos, errorMessages
+             , SourcePos, sourceName, sourceLine, sourceColumn
+             , SourceName, Source, Line, Column
              , Message(SysUnExpect,UnExpect,Expect,Message)
              , messageString, messageCompare, messageEq, showErrorMessages
-             
-             --general combinators  
-             , skipMany, skipMany1      
+
+             --general combinators
+             , skipMany, skipMany1
              , many, many1, manyTill
              , sepBy, sepBy1
              , count
@@ -45,25 +45,25 @@ module Parser(
              , oneOf, noneOf
              , anySymbol
              , notFollowedBy
-             
-             --language dependent character parsers           
+
+             --language dependent character parsers
              , letter, alphaNum, lower, upper, newline, tab
              , digit, hexDigit, octDigit
-             , space, spaces 
+             , space, spaces
              , oneOf, noneOf
-             , char, anyChar 
+             , char, anyChar
              , string
              , eof
-             
+
              --primitive
              , satisfy
              , try
              , token --obsolete, use try instead
              , pzero, onFail, unexpected
-                          
+
              , getPosition, setPosition
              , getInput, setInput
-             
+
              , getState, setState
              ) where
 
@@ -92,7 +92,7 @@ p1 <|> p2           = mplus p1 p2
 -----------------------------------------------------------
 -- Character parsers
 -----------------------------------------------------------
-spaces              = skipMany space       <?> "white space"          
+spaces              = skipMany space       <?> "white space"
 space               = satisfy (isSpace)     <?> "space"
 
 newline             = char '\n'             <?> "new-line"
@@ -108,7 +108,7 @@ octDigit            = satisfy (isOctDigit)  <?> "octal digit"
 
 
 -- char c              = satisfy (==c)  <?> show [c]
-char c              = do{ string [c]; return c}  <?> show [c]        
+char c              = do{ string [c]; return c}  <?> show [c]
 anyChar             = anySymbol
 
 -- string :: String -> Parser String
@@ -136,8 +136,8 @@ optional p          = do{ p; return ()} <|> return ()
 between :: Parser open -> Parser close -> Parser a -> Parser a
 between open close p
                     = do{ open; x <- p; close; return x }
-                
-                
+
+
 skipMany,skipMany1 :: Parser a -> Parser ()
 skipMany1 p         = do{ p; skipMany p }
 skipMany p          = scan
@@ -177,11 +177,11 @@ chainl1 p op        = do{ x <- p; rest x }
                                     ; rest (f x y)
                                     }
                                 <|> return x
-                              
+
 chainr1 p op        = scan
                     where
                       scan      = do{ x <- p; rest x }
-                      
+
                       rest x    = do{ f <- op
                                     ; y <- scan
                                     ; return (f x y)
@@ -193,9 +193,9 @@ chainr1 p op        = scan
 -- Tricky combinators
 -----------------------------------------------------------
 eof :: Parser ()
-eof                 = notFollowedBy anySymbol <?> "end of input"   
+eof                 = notFollowedBy anySymbol <?> "end of input"
 
-notFollowedBy :: Parser Char -> Parser ()   
+notFollowedBy :: Parser Char -> Parser ()
 notFollowedBy p     = try (do{ c <- p; unexpected (show [c]) }
                            <|> return ()
                           )
@@ -230,13 +230,13 @@ setPosition :: SourcePos -> Parser ()
 setPosition pos     = do{ updateState (\(State input _) -> State input pos)
                         ; return ()
                         }
-                        
+
 setInput :: Source -> Parser ()
 setInput input      = do{ updateState (\(State _ pos)   -> State input pos)
                         ; return ()
                         }
 
-getState            = updateState id    
+getState            = updateState id
 setState state      = updateState (const state)
 
 
@@ -250,7 +250,7 @@ runP (Parser p)     = p
 
 data Consumed a     = Consumed a                --input is consumed
                     | Empty !a                  --no input is consumed
-                    
+
 data Reply a        = Ok !a !State ParseError   --parsing succeeded with @a@
                     | Error ParseError          --parsing failed
 
@@ -280,7 +280,7 @@ parse p name input
         Ok x _ _    -> Right x
         Error err   -> Left err
 
-parserReply result     
+parserReply result
     = case result of
         Consumed reply -> reply
         Empty reply    -> reply
@@ -291,7 +291,7 @@ parserReply result
 -----------------------------------------------------------
 instance Functor Parser where
   fmap f (Parser p)
-    = Parser (\state -> 
+    = Parser (\state ->
         case (p state) of
           Consumed reply -> Consumed (mapReply reply)
           Empty    reply -> Empty    (mapReply reply)
@@ -299,26 +299,26 @@ instance Functor Parser where
     where
       mapReply reply
         = case reply of
-            Ok x state err -> let fx = f x 
+            Ok x state err -> let fx = f x
                               in seq fx (Ok fx state err)
             Error err      -> Error err
-           
+
 
 -----------------------------------------------------------
 -- Monad: return, sequence (>>=) and fail
------------------------------------------------------------    
+-----------------------------------------------------------
 instance Applicative Parser where
   pure  = undefined
-  (<*>) = undefined 
+  (<*>) = undefined
 
 instance Monad Parser where
   return x
-    = Parser (\state -> Empty (Ok x state (unknownError state)))   
-    
+    = Parser (\state -> Empty (Ok x state (unknownError state)))
+
   (Parser p) >>= f
     = Parser (\state ->
-        case (p state) of                 
-          Consumed reply1 
+        case (p state) of
+          Consumed reply1
             -> Consumed $
                case (reply1) of
                  Ok x state1 err1 -> case runP (f x) state1 of
@@ -326,17 +326,17 @@ instance Monad Parser where
                                        Consumed reply2 -> reply2
                  Error err1       -> Error err1
 
-          Empty reply1    
+          Empty reply1
             -> case (reply1) of
                  Ok x state1 err1 -> case runP (f x) state1 of
                                        Empty reply2 -> Empty (mergeErrorReply err1 reply2)
-                                       other        -> other                                                    
+                                       other        -> other
                  Error err1       -> Empty (Error err1)
-      )                                                              
+      )
 
-  
+
   fail msg
-    = Parser (\state -> 
+    = Parser (\state ->
         Empty (Error (newErrorMessage (Message msg) (statePos state))))
 
 
@@ -353,12 +353,12 @@ pzero :: Parser a
 pzero = mzero
 
 instance CAP.Alternative Parser where
-  empty 
+  empty
     = Parser (\state -> Empty (Error (unknownError state)))
-  
+
   (Parser p1) <|> (Parser p2)
     = Parser (\state ->
-        case (p1 state) of        
+        case (p1 state) of
           Empty (Error err) -> case (p2 state) of
                                  Empty reply -> Empty (mergeErrorReply err reply)
                                  consumed    -> consumed
@@ -366,14 +366,14 @@ instance CAP.Alternative Parser where
       )
 
 instance MonadPlus Parser
-      
+
 -----------------------------------------------------------
--- Primitive Parsers: 
+-- Primitive Parsers:
 --  try, satisfy, onFail, unexpected and updateState
 -----------------------------------------------------------
 try :: Parser a -> Parser a
 try (Parser p)
-    = Parser (\state@(State input pos) ->     
+    = Parser (\state@(State input pos) ->
         case (p state) of
           Consumed (Error err)  -> Empty (Error (setErrorPos pos err))
           Consumed ok           -> Empty ok
@@ -382,26 +382,26 @@ try (Parser p)
 
 token p --obsolete, use "try" instead
     = try p
-     
+
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy test
-    = Parser (\state@(State input pos) -> 
+    = Parser (\state@(State input pos) ->
         case input of
           (c:cs) | test c    -> let newpos   = updatePos pos c
                                     newstate = State cs newpos
-                                in seq newpos $ seq newstate $ 
+                                in seq newpos $ seq newstate $
                                    Consumed (Ok c newstate (newErrorUnknown newpos))
                  | otherwise -> Empty (sysUnExpectError (show [c]) pos)
           []     -> Empty (sysUnExpectError "" pos)
       )
 
 
-onFail :: Parser a -> String -> Parser a    
+onFail :: Parser a -> String -> Parser a
 onFail (Parser p) msg
-    = Parser (\state -> 
+    = Parser (\state ->
         case (p state) of
-          Empty reply 
-            -> Empty $ 
+          Empty reply
+            -> Empty $
                case (reply) of
                  Error err        -> Error (setExpectError msg err)
                  Ok x state1 err  | errorIsUnknown err -> reply
@@ -411,36 +411,36 @@ onFail (Parser p) msg
 
 
 updateState :: (State -> State) -> Parser State
-updateState f 
+updateState f
     = Parser (\state -> Empty (Ok state (f state) (unknownError state)))
-    
-    
+
+
 unexpected :: String -> Parser a
 unexpected msg
     = Parser (\state -> Empty (Error (newErrorMessage (UnExpect msg) (statePos state))))
-    
-    
+
+
 -----------------------------------------------------------
--- Parsers unfolded for speed: 
+-- Parsers unfolded for speed:
 --  string
------------------------------------------------------------    
+-----------------------------------------------------------
 
 {- specification of @string@:
 string s            = scan s
                     where
                       scan []     = return s
-                      scan (c:cs) = do{ char c <?> show s; scan cs }                      
+                      scan (c:cs) = do{ char c <?> show s; scan cs }
 -}
 
 string :: String -> Parser String
 string s
-    = Parser (\state@(State input pos) -> 
+    = Parser (\state@(State input pos) ->
        let
         ok cs             = let newpos   = updatePosString pos s
                                 newstate = State cs newpos
-                            in seq newpos $ seq newstate $ 
+                            in seq newpos $ seq newstate $
                                (Ok s newstate (newErrorUnknown newpos))
-                               
+
         errEof            = Error (setErrorMessage (Expect (show s))
                                      (newErrorMessage (SysUnExpect "") pos))
         errExpect c       = Error (setErrorMessage (Expect (show s))
@@ -457,4 +457,3 @@ string s
                            | otherwise     = Empty (errExpect c)
 
        in walk1 s input)
-

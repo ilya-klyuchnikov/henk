@@ -31,9 +31,9 @@ main :: IO ()
 main = do{ putStr welcome
          ; putStr "Loading prelude.henk...\n\n"
          ; prelude_result <- parseFromFile HenkParser.program "prelude.henk"
-         ; prelude_prog   <- case prelude_result of           
-                               Left  err   -> do{putStr (show(err)); return $ error ""}             
-                               Right prog  -> return prog             
+         ; prelude_prog   <- case prelude_result of
+                               Left  err   -> do{putStr (show(err)); return $ error ""}
+                               Right prog  -> return prog
          ; prelude_rules  <- return $ prog2DeltaRules prelude_prog
          ; putStr $ "Type inferencing prelude.henk...\n"
          ; (prelude_ti_er,(prelude_prog,prelude_anns))  <- return $ timain [] prelude_prog
@@ -45,30 +45,30 @@ main = do{ putStr welcome
          ; fnprog   <- getLine
          ; fnprog   <- if fnprog=="" then return "prog.henk" else return $ fnprog
          ; putStr   $ "\nParsing "++fnprog++"...\n\n"
-         ; prog     <- parseFromFile HenkParser.program fnprog   
-         ; prog     <- case prog of           
-                        Left err -> do{ putStr (show(err)); return $ error ""}             
+         ; prog     <- parseFromFile HenkParser.program fnprog
+         ; prog     <- case prog of
+                        Left err -> do{ putStr (show(err)); return $ error ""}
                         Right d  -> return d
-         ; prog_rules  <- return $ prog2DeltaRules prog              
+         ; prog_rules  <- return $ prog2DeltaRules prog
          ; putStr $ "Type inferencing...\n"
-         ; (er,(prog,_)) <- return $ timain prelude_anns prog    
-         ; putErrors er         
+         ; (er,(prog,_)) <- return $ timain prelude_anns prog
+         ; putErrors er
          ; putStr "\n"
          ; putStr $ "Type checking...\n"
          ; (er,_) <- return $ tcmain (prog_rules++prelude_rules) typeSystem prog
          ; putErrors er
          ; ev_expr  <- (HenkInt.intmain (prog_rules++prelude_rules) prog)
          ; putStr   $ ""
-         } 
+         }
 
 
 putErrors xs = do {mapM (\s -> putStr $ s ++ "\n") (take 1 xs)
                   ;putStr $ "Numbers of errors: "++(show (length xs))++"\n"
                   ;return ()}
-         
+
 add_line_numbers :: String -> String
 add_line_numbers s  =  (concat.(map (\(x,y) -> x++y)).(zip $ numbers l).(map (++"\n" ))) (lines s)
-                       where     
+                       where
                        l = length (lines s)
 
 numbers :: Int -> [String]
@@ -78,17 +78,17 @@ numbers l = [ (zeros i) ++ (show i) ++ ": " | i <- [1..]]
 
 -- ti performs type inference on a single expression
 ti :: String -> IO ()
-ti s = 
+ti s =
        do{ putStr "Parsing expression....\n"
-         ; mex <- return $ parse single_expr "" s 
-         ; ex  <- case mex of 
+         ; mex <- return $ parse single_expr "" s
+         ; ex  <- case mex of
                 Left  err -> do{putStr (show(err)); return $ error ""}
                 Right ex  -> return ex
          ; putStr "Loading prelude.henk...\n\n"
          ; prelude_result <- parseFromFile HenkParser.program "prelude.henk"
-         ; prelude_prog   <- case prelude_result of           
-                               Left  err   -> do{putStr (show(err)); return $ error ""}             
-                               Right prog  -> return prog             
+         ; prelude_prog   <- case prelude_result of
+                               Left  err   -> do{putStr (show(err)); return $ error ""}
+                               Right prog  -> return prog
          ; prelude_rules  <- return $ prog2DeltaRules prelude_prog
          ; putStr $ "Type inferencing prelude.henk...\n"
          ; (prelude_ti_er,(prelude_prog,prelude_anns))  <- return $ timain [] prelude_prog
@@ -100,14 +100,14 @@ ti s =
          ; fnprog   <- return "" --getLine
          ; fnprog   <- if fnprog=="" then return "prog.henk" else return $ fnprog
          ; putStr   $ "\nParsing "++fnprog++"...\n\n"
-         ; prog     <- parseFromFile HenkParser.program fnprog   
-         ; prog     <- case prog of           
-                        Left err -> do{ putStr (show(err)); return $ error ""}             
+         ; prog     <- parseFromFile HenkParser.program fnprog
+         ; prog     <- case prog of
+                        Left err -> do{ putStr (show(err)); return $ error ""}
                         Right d  -> return d
-         ; prog_rules  <- return $ prog2DeltaRules prog              
+         ; prog_rules  <- return $ prog2DeltaRules prog
          ; putStr $ "Type inferencing program...\n"
-         ; (er,(prog,prog_anns)) <- return $ timain prelude_anns prog    
-         ; putErrors er         
+         ; (er,(prog,prog_anns)) <- return $ timain prelude_anns prog
+         ; putErrors er
          ; putStr "\n"
          ; putStr $ "Type checking program...\n"
          ; (er,_) <- return $ tcmain (prog_rules++prelude_rules) typeSystem prog
@@ -118,14 +118,8 @@ ti s =
          ; putErrors er
          ; putStr "\n"
          ; putStr $ "Type checking expression...\n"
-         ; (er,ext) <- return $ tcexpr (prog_rules++prelude_rules) typeSystem ex 
+         ; (er,ext) <- return $ tcexpr (prog_rules++prelude_rules) typeSystem ex
          ; putErrors er
          ; putStr "\n"
          ; putStr $ (expr2string ex) ++ " has type: " ++(expr2string ext)
-         } 
-
-
-
-
-
- 
+         }

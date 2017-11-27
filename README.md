@@ -29,10 +29,10 @@ Numbers of errors: 0
 Type checking...
 Numbers of errors: 0
 
-Evaluating: 
+Evaluating:
 map E Bool apply exList
 
-Result: 
+Result:
 [False,True]
 
 ```

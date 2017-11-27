@@ -6,10 +6,10 @@ module HenkAS where
 data Program
   = Program [TDecl] [VDecl]
     deriving (Show,Eq)
-    
+
 -- Data Type Declaration
 data TDecl
- = TDecl TCons [DCons]  
+ = TDecl TCons [DCons]
    deriving (Show,Eq)
 
 type TCons = TVar  -- Type Constructor
@@ -19,31 +19,31 @@ type DCons = TVar  -- Data Constructor
 data VDecl
  = VDecl TVar Expr
    deriving (Show,Eq)
-   
--- Expression    
+
+-- Expression
 data Expr
- = LamExpr TVar Expr		-- Lambda Abstraction
- | PiExpr TVar Expr		-- Pi
- | AppExpr Expr Expr		-- Application
+ = LamExpr TVar Expr            -- Lambda Abstraction
+ | PiExpr TVar Expr             -- Pi
+ | AppExpr Expr Expr            -- Application
  | CaseExpr Expr [Alt] Expr     -- Case
- | VarExpr TVar			-- Typed Variable
- | LitExpr Lit			-- Literal
+ | VarExpr TVar                 -- Typed Variable
+ | LitExpr Lit                  -- Literal
  | SortExpr Sort                -- Sorts
  | Unknown                      -- for untyped variables
-   deriving (Show,Eq)	
+   deriving (Show,Eq)
 
--- Typed Variable   
+-- Typed Variable
 data TVar
  = TVar Var Expr
    deriving (Show,Eq)
 
--- Variable   
-data Var  
- = Var String 
+-- Variable
+data Var
+ = Var String
  | Anonymous
  deriving (Show,Eq)
 
--- Case Alternative 
+-- Case Alternative
 data Alt
  = Alt TCons [TCA] [DCA] Expr
  deriving (Show,Eq)
@@ -54,11 +54,11 @@ type DCA = TVar -- data constructor argument
 -- Literals
 data Lit
  = LitInt  Integer
- | IntType 
+ | IntType
  deriving (Show,Eq)
 
 -- Sorts
-data Sort 
+data Sort
  = Star
  | Box
  | SortNum Integer

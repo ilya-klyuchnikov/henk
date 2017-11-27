@@ -5,16 +5,16 @@
 -----------------------------------------------------------
 module ParseToken( identifier, reserved
                  , operator, reservedOp
-                        
-                 , charLiteral, stringLiteral 
+
+                 , charLiteral, stringLiteral
                  , natural, integer, float, naturalOrFloat
                  , decimal, hexadecimal, octal
-            
-                 , symbol, lexeme, whiteSpace            
-             
+
+                 , symbol, lexeme, whiteSpace
+
                  , parens, braces, brackets, squares
                  , semi, comma, colon, dot
-                 , semiSep, semiSep1 
+                 , semiSep, semiSep1
                  , commaSep, commaSep1
                  ) where
 
@@ -33,7 +33,7 @@ braces p        = between (symbol "{") (symbol "}") p
 brackets p      = between (symbol "<") (symbol ">") p
 squares p       = between (symbol "[") (symbol "]") p
 
-semi            = symbol ";" 
+semi            = symbol ";"
 comma           = symbol ","
 dot             = symbol "."
 colon           = symbol ":"
@@ -49,12 +49,12 @@ semiSep1 p      = sepBy1 p semi
 -- Chars & Strings
 -----------------------------------------------------------
 charLiteral :: Parser Char
-charLiteral     = lexeme (between (char '\'') 
+charLiteral     = lexeme (between (char '\'')
                                   (char '\'' <?> "end of character")
                                   characterChar )
                 <?> "character"
 
-characterChar   = charLetter <|> charEscape 
+characterChar   = charLetter <|> charEscape
                 <?> "literal character"
 
 charEscape      = do{ char '\\'; escapeCode }
@@ -64,18 +64,18 @@ charLetter      = satisfy (\c -> (c /= '\'') && (c /= '\\') && (c > '\026'))
 
 stringLiteral :: Parser String
 stringLiteral   = lexeme (
-                  do{ str <- between (char '"')                   
+                  do{ str <- between (char '"')
                                      (char '"' <?> "end of string")
-                                     (many stringChar) 
+                                     (many stringChar)
                     ; return (foldr (maybe id (:)) "" str)
                     }
                   <?> "literal string")
 
 stringChar :: Parser (Maybe Char)
 stringChar      =   do{ c <- stringLetter; return (Just c) }
-                <|> stringEscape 
+                <|> stringEscape
                 <?> "string character"
-            
+
 stringLetter    = satisfy (\c -> (c /= '"') && (c /= '\\') && (c > '\026'))
 
 stringEscape    = do{ char '\\'
@@ -83,14 +83,14 @@ stringEscape    = do{ char '\\'
                       <|> do{ escapeEmpty; return Nothing }
                       <|> do{ esc <- escapeCode; return (Just esc) }
                     }
-                    
+
 escapeEmpty     = char '&'
 escapeGap       = do{ many1 space
                     ; char '\\' <?> "end of string gap"
                     }
-                    
-                    
-                    
+
+
+
 -- escape codes
 escapeCode      = charEsc <|> charNum <|> charAscii <|> charControl
                 <?> "escape code"
@@ -101,8 +101,8 @@ charControl     = do{ char '^'
                     ; return (toEnum (fromEnum code - fromEnum 'A'))
                     }
 
-charNum :: Parser Char                    
-charNum         = do{ code <- decimal 
+charNum :: Parser Char
+charNum         = do{ code <- decimal
                               <|> do{ char 'o'; number 8 octDigit }
                               <|> do{ char 'x'; number 16 hexDigit }
                     ; return (toEnum (fromInteger code))
@@ -111,7 +111,7 @@ charNum         = do{ code <- decimal
 charEsc         = choice (map parseEsc escMap)
                 where
                   parseEsc (c,code)     = do{ char c; return code }
-                  
+
 charAscii       = choice (map parseAscii asciiMap)
                 where
                   parseAscii (asc,code) = try (do{ string asc; return code })
@@ -119,7 +119,7 @@ charAscii       = choice (map parseAscii asciiMap)
 
 -- escape code tables
 escMap          = zip ("abfnrtv\\\"\'") ("\a\b\f\n\r\t\v\\\"\'")
-asciiMap        = zip (ascii3codes ++ ascii2codes) (ascii3 ++ ascii2) 
+asciiMap        = zip (ascii3codes ++ ascii2codes) (ascii3 ++ ascii2)
 
 ascii2codes     = ["BS","HT","LF","VT","FF","CR","SO","SI","EM",
                    "FS","GS","RS","US","SP"]
@@ -146,7 +146,7 @@ natural         = lexeme nat        <?> "natural"
 
 
 -- floats
-floating        = do{ n <- decimal 
+floating        = do{ n <- decimal
                     ; fractExponent n
                     }
 
@@ -155,19 +155,19 @@ natFloat        = do{ char '0'
                     ; zeroNumFloat
                     }
                   <|> decimalFloat
-                  
+
 zeroNumFloat    =  do{ n <- hexadecimal <|> octal
                      ; return (Left n)
                      }
                 <|> decimalFloat
-                <|> return (Left 0)                  
-                  
+                <|> return (Left 0)
+
 decimalFloat    = do{ n <- decimal
-                    ; option (Left n) 
+                    ; option (Left n)
                              (do{ f <- fractExponent n; return (Right f)})
                     }
 
-                    
+
 fractExponent n = do{ fract <- fraction
                     ; expo  <- option 1.0 exponent'
                     ; return ((fromInteger n + fract)*expo)
@@ -184,7 +184,7 @@ fraction        = do{ char '.'
                   <?> "fraction"
                 where
                   op d f    = (f + fromIntegral (digitToInt d))/10.0
-                    
+
 exponent'       = do{ oneOf "eE"
                     ; f <- sign
                     ; e <- decimal <?> "exponent"
@@ -201,20 +201,20 @@ int             = do{ f <- lexeme sign
                     ; n <- nat
                     ; return (f n)
                     }
-                    
+
 sign            :: Parser (Integer -> Integer)
-sign            =   (char '-' >> return negate) 
-                <|> (char '+' >> return id)     
+sign            =   (char '-' >> return negate)
+                <|> (char '+' >> return id)
                 <|> return id
 
 nat             = zeroNumber <|> decimal
-    
+
 zeroNumber      = do{ char '0'
                     ; hexadecimal <|> octal <|> decimal <|> return 0
                     }
-                  <?> ""       
+                  <?> ""
 
-decimal         = number 10 digit        
+decimal         = number 10 digit
 hexadecimal     = do{ oneOf "xX"; number 16 hexDigit }
 octal           = do{ oneOf "oO"; number 8 octDigit  }
 
@@ -223,12 +223,12 @@ number base baseDigit
     = do{ digits <- many1 baseDigit
         ; let n = foldl (\x d -> base*x + toInteger (digitToInt d)) 0 digits
         ; seq n (return n)
-        }          
+        }
 
 -----------------------------------------------------------
 -- Operators & reserved ops
 -----------------------------------------------------------
-reservedOp name =   
+reservedOp name =
     lexeme $ try $
     do{ string name
       ; notFollowedBy (opLetter tokenDef) <?> ("end of " ++ show name)
@@ -241,18 +241,18 @@ operator =
          then unexpected ("reserved operator " ++ show name)
          else return name
       }
-      
+
 oper =
     do{ c <- (opStart tokenDef)
       ; cs <- many (opLetter tokenDef)
       ; return (c:cs)
       }
     <?> "operator"
-    
+
 isReservedOp name =
-    isReserved (sort (reservedOpNames tokenDef)) name          
-    
-    
+    isReserved (sort (reservedOpNames tokenDef)) name
+
+
 -----------------------------------------------------------
 -- Identifiers & Reserved words
 -----------------------------------------------------------
@@ -268,12 +268,12 @@ caseString name
     where
       walk []     = return ()
       walk (c:cs) = do{ caseChar c <?> msg; walk cs }
-      
+
       caseChar c  | isAlpha c  = char (toLower c) <|> char (toUpper c)
                   | otherwise  = char c
-      
+
       msg         = show name
-      
+
 
 identifier =
     lexeme $ try $
@@ -282,8 +282,8 @@ identifier =
          then unexpected ("reserved word " ++ show name)
          else return name
       }
-    
-ident           
+
+ident
     = do{ c <- identStart tokenDef
         ; cs <- many (identLetter tokenDef)
         ; return (c:cs)
@@ -296,8 +296,8 @@ isReservedName name
       caseName      | caseSensitive tokenDef  = name
                     | otherwise               = map toLower name
 
-    
-isReserved names name    
+
+isReserved names name
     = scan names
     where
       scan []       = False
@@ -311,7 +311,7 @@ theReservedNames
     | otherwise               = map (map toLower) sortedNames
     where
       sortedNames   = sort (reservedNames tokenDef)
-                             
+
 
 -----------------------------------------------------------
 -- White space & symbols
@@ -319,24 +319,24 @@ theReservedNames
 symbol name
     = lexeme (string name)
 
-lexeme p       
+lexeme p
     = do{ x <- p; whiteSpace; return x  }
-  
-  
---whiteSpace    
-whiteSpace 
+
+
+--whiteSpace
+whiteSpace
     | noLine && noMulti  = skipMany (simpleSpace <?> "")
     | noLine             = skipMany (simpleSpace <|> multiLineComment <?> "")
     | noMulti            = skipMany (simpleSpace <|> oneLineComment <?> "")
     | otherwise          = skipMany (simpleSpace <|> oneLineComment <|> multiLineComment <?> "")
     where
       noLine  = null (commentLine tokenDef)
-      noMulti = null (commentStart tokenDef)   
-      
-      
+      noMulti = null (commentStart tokenDef)
+
+
 simpleSpace =
-    skipMany1 (satisfy isSpace)    
-    
+    skipMany1 (satisfy isSpace)
+
 oneLineComment =
     do{ try (string (commentLine tokenDef))
       ; skipMany (satisfy (/= '\n'))
@@ -348,16 +348,16 @@ multiLineComment =
        ; inComment
        }
 
-inComment 
+inComment
     | nestedComments tokenDef  = inCommentMulti
     | otherwise                = inCommentSingle
-    
-inCommentMulti 
+
+inCommentMulti
     =   do{ try (string (commentEnd tokenDef)) ; return () }
     <|> do{ multiLineComment                     ; inCommentMulti }
     <|> do{ skipMany1 (noneOf startEnd)          ; inCommentMulti }
     <|> do{ oneOf startEnd                       ; inCommentMulti }
-    <?> "end of comment"  
+    <?> "end of comment"
     where
       startEnd   = nub (commentEnd tokenDef ++ commentStart tokenDef)
 
@@ -368,4 +368,3 @@ inCommentSingle
     <?> "end of comment"
     where
       startEnd   = nub (commentEnd tokenDef ++ commentStart tokenDef)
-

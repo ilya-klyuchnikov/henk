@@ -5,7 +5,7 @@ data GenTree : (* -> *) -> * -> *
        = {Branch : (\/ m:*->*, a: * . a -> m (GenTree m a) -> GenTree m a ) }
 
 
--- Generalized Zip  
+-- Generalized Zip
 data ListT : *
  = {OneT  : * -> ListT
    ;ConsT : * -> ListT -> ListT}
@@ -24,21 +24,21 @@ let prodT : ListT -> *
 
 let zip : |~|a:*,b:* . (List a) -> (List b) -> (List (PairT a b))
  = \a:*,b:*,as:(List a),bs:(List b).
-   case as of 
+   case as of
    {Nil t         => Nil (PairT a b)
    ;Cons t ae ar  => case bs of
                      {Nil  t        => Nil (PairT a b)
                      ;Cons tt be br => Cons (PairT a b) (Pair a b ae be) (zip a b ar br)}}
-            
+
 let zipT : |~|ts:ListT . prodT (mapT List ts) -> List (prodT ts)
  = \ts: ListT.
-   \xs: (prodT (mapT List ts)).  
+   \xs: (prodT (mapT List ts)).
    case ts of
    {OneT t            => xs
-   ;ConsT t' ts'      => 
+   ;ConsT t' ts'      =>
     case xs of
     {Pair t1 t2 ys pys => zip t' (prodT ts') ys (zipT ts' pys)}
-   } : List (prodT ts)    
+   } : List (prodT ts)
 
 
 
@@ -54,18 +54,18 @@ let prodOfList : PairT (List Bool) (PairT (List Nat) (List Int))
 
 -- Existential Types
 
-data E : * 
+data E : *
  = { EC : \/a:* . a -> (a -> Bool) -> E }
- 
+
 let apply : E -> Bool
  = \e : E .
    case e of
    {EC t x f => f x}
-   
+
 let ex1 : E
  = EC Nat (Succ Zero) isZero
 
-let ex2 : E 
+let ex2 : E
  = EC (List Int) (Nil Int) (isEmpty Int)
 
 let exList : List E
@@ -73,4 +73,3 @@ let exList : List E
 
 let main : List Bool =
  map E Bool apply exList
-  

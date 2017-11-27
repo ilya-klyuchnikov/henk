@@ -9,7 +9,7 @@ type Axioms        = [Axiom]
 type Rule          = (Sort,Sort,Sort)
 type Rules         = [Rule]
 
--- lambda cube sorts 
+-- lambda cube sorts
 lcs :: Sorts
 lcs = [Star,Box]
 
@@ -33,4 +33,3 @@ la = (lcs,lca,lar)
 l2 = (lcs,lca,l2r)
 lo = (lcs,lca,lor)
 cc = (lcs,lca,ccr)
-

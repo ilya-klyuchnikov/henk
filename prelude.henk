@@ -122,5 +122,3 @@ data Either : (* -> * -> *)
         = { Left:  (\/a, b. a -> Either a b)
           ; Right:  (\/a, b. b -> Either a b)
           }
-
-
