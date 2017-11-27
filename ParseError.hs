@@ -30,8 +30,6 @@ type Line           = Int
 type Column         = Int
 
 data SourcePosition = SourcePos SourceName !Line !Column
-         deriving (Eq,Ord)
-
 
 newPos :: SourceName -> Line -> Column -> SourcePosition
 newPos sourceName line column
