@@ -434,17 +434,17 @@ string s            = scan s
 -}
 
 string :: String -> Parser String
-string s
+string str
     = PT (\ (ST input pos) -> walkAll input pos) where
-        walkAll input pos = walk1 s input where
-          ok cs             = let newpos   = updatePosString pos s
+        walkAll input pos = walk1 str input where
+          ok cs             = let newpos   = updatePosString pos str
                                   newstate = ST cs newpos
                               in seq newpos $ seq newstate $
-                                 (Ok s newstate (newErrorUnknown newpos))
+                                 (Ok str newstate (newErrorUnknown newpos))
 
-          errEof            = Error (setErrorMessage (Expect (show s))
+          errEof            = Error (setErrorMessage (Expect (show str))
                                        (newErrorMessage (SysUnExpect "") pos))
-          errExpect c       = Error (setErrorMessage (Expect (show s))
+          errExpect c       = Error (setErrorMessage (Expect (show str))
                                        (newErrorMessage (SysUnExpect (show [c])) pos))
 
           walk [] cs        = ok cs
