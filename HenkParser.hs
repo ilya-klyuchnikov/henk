@@ -4,7 +4,6 @@ import Parser
 import TokenDef
 import ParseToken
 import HenkAS
-import HenkPP()
 
 ----------------------------------------------------------------
 -- The Program
