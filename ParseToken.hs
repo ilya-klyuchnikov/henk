@@ -21,7 +21,7 @@ module ParseToken( identifier, reserved
 import Data.Char         (isSpace,digitToInt,isAlpha,toLower,toUpper)
 import Data.List         (nub,sort)
 import Parser
-import StdTokenDef  (TokenDef(..))
+import StdTokenDef  (TokenDefinition(..))
 import TokenDef     (tokenDef)
 
 

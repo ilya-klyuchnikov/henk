@@ -3,7 +3,7 @@
 --
 -- $version: 23 Feb 2000, release version 0.2$
 -----------------------------------------------------------
-module StdTokenDef (TokenDef(..)
+module StdTokenDef (TokenDefinition(..)
                    ,haskellStyle, javaStyle
                    ,emptyStyle
                    ,haskell, haskellExt
@@ -15,7 +15,7 @@ import Parser
 -----------------------------------------------------------
 -- TokenDef
 -----------------------------------------------------------
-data TokenDef  = TokenDef
+data TokenDefinition  = TokenDef
                { commentStart   :: String
                , commentEnd     :: String
                , commentLine    :: String
