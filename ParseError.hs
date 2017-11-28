@@ -29,7 +29,7 @@ type SourceName     = String
 type Line           = Int
 type Column         = Int
 
-data SourcePosition = SourcePos SourceName !Line !Column
+data SourcePosition = SourcePos SourceName !Line !Column deriving (Eq)
 
 newPos :: SourceName -> Line -> Column -> SourcePosition
 newPos sourceName line column
@@ -78,6 +78,7 @@ data Message        = SysUnExpect !String   --library generated unexpect
                     | UnExpect    !String   --unexpected something
                     | Expect      !String   --expecting something
                     | Msg         !String   --raw message
+                    deriving (Eq)
 
 messageToEnum msg
     = case msg of SysUnExpect _ -> 0
@@ -101,7 +102,7 @@ messageEq msg1 msg2
 -----------------------------------------------------------
 -- Parse Errors
 -----------------------------------------------------------
-data ParseError     = PError !SourcePosition [Message]
+data ParseError     = PError !SourcePosition [Message] deriving (Eq)
 
 errorPos :: ParseError -> SourcePosition
 errorPos (PError pos msgs)

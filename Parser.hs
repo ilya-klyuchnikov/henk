@@ -23,7 +23,7 @@
 
 module Parser(
              --operators: label a parser, alternative
-               (<?>), (<|>)
+               (<?>), (<|>), (Parser.<**>)
 
              --basic types
              , Parser, parse, parseFromFile
@@ -313,6 +313,15 @@ instance Functor Parser where
 instance Applicative Parser where
   pure x = PT (\state -> Empty (Ok x state (unknownError state)))
   (<*>) = undefined
+
+infixl 4 <**>
+(<**>) :: Parser (a -> b) -> Parser a -> Parser b
+pab <**> pa = do {f <- pab; x <- pa; return (f x)}
+
+infixl 4 <***>
+(<***>) :: Parser (a -> b) -> Parser a -> Parser b
+pab <***> pa = pab <*> pa
+
 
 instance Monad Parser where
   (PT p) >>= next
