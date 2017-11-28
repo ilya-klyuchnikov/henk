@@ -13,7 +13,8 @@ testParsing msg parser input expected =
   TestCase (assertEqual msg (Right expected) (parse1 parser input))
 
 test1 = testParsing "test1" (char 'a') "a" 'a'
-test2 = testParsing "test2" (char 'a' <|> char 'b') "b" 'a'
+test21 = testParsing "test2" (char 'a' <|> char 'b') "a" 'a'
+test22 = testParsing "test2" (char 'a' <|> char 'b') "b" 'b'
 
 -- p :: Parser Char
 test3 = testParsing
@@ -30,3 +31,5 @@ test4 = testParsing
           ((return (,)) <**> (char 'a') <**> (char 'b'))
           "ab"
           ('a', 'b')
+
+allTests = TestList [test1, test21, test22, test3, test4]
