@@ -32,4 +32,20 @@ test4 = testParsing
           "ab"
           ('a', 'b')
 
+parsePair :: Parser a -> Parser b -> Parser (a, b)
+parsePair p1 p2 = (do {x <- p1; y <- p2; return (x, y)})
+
+example01 =
+  parse1
+  ((parsePair (char 'a') (char 'b')) <|> (parsePair (char 'c') (char 'd')))
+  "xxx"
+
+brackets :: Parser [Char]
+brackets = do {open <- char '(';
+               inner <- brackets;
+               close <- char ')';
+               return ([open] ++ inner ++ [close])} <|> (return "")
+
+example02 = parse1 (try brackets) "(((a)))"
+
 allTests = TestList [test1, test21, test22, test3, test4]
