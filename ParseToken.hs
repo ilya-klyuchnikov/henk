@@ -3,20 +3,7 @@
 --
 -- $version: 23 Feb 2000, release version 0.2$
 -----------------------------------------------------------
-module ParseToken( identifier, reserved
-                 , operator, reservedOp
-
-                 , charLiteral, stringLiteral
-                 , natural, integer, float, naturalOrFloat
-                 , decimal, hexadecimal, octal
-
-                 , symbol, lexeme, whiteSpace
-
-                 , parens, braces, brackets, squares
-                 , semi, comma, colon, dot
-                 , semiSep, semiSep1
-                 , commaSep, commaSep1
-                 ) where
+module ParseToken where
 
 import Data.Char         (isSpace,digitToInt,isAlpha,toLower,toUpper)
 import Data.List         (nub,sort)
@@ -137,66 +124,8 @@ ascii3          = ['\NUL','\SOH','\STX','\ETX','\EOT','\ENQ','\ACK',
 -----------------------------------------------------------
 -- Numbers
 -----------------------------------------------------------
-naturalOrFloat :: Parser (Either Integer Double)
-naturalOrFloat  = lexeme (natFloat) <?> "number"
-
-float           = lexeme floating   <?> "float"
-integer         = lexeme int        <?> "integer"
-natural         = lexeme nat        <?> "natural"
-
-
--- floats
-floating        = do{ n <- decimal
-                    ; fractExponent n
-                    }
-
-
-natFloat        = do{ char '0'
-                    ; zeroNumFloat
-                    }
-                  <|> decimalFloat
-
-zeroNumFloat    =  do{ n <- hexadecimal <|> octal
-                     ; return (Left n)
-                     }
-                <|> decimalFloat
-                <|> return (Left 0)
-
-decimalFloat    = do{ n <- decimal
-                    ; option (Left n)
-                             (do{ f <- fractExponent n; return (Right f)})
-                    }
-
-
-fractExponent n = do{ fract <- fraction
-                    ; expo  <- option 1.0 exponent'
-                    ; return ((fromInteger n + fract)*expo)
-                    }
-                <|>
-                  do{ expo <- exponent'
-                    ; return ((fromInteger n)*expo)
-                    }
-
-fraction        = do{ char '.'
-                    ; digits <- many1 digit <?> "fraction"
-                    ; return (foldr op 0.0 digits)
-                    }
-                  <?> "fraction"
-                where
-                  op d f    = (f + fromIntegral (digitToInt d))/10.0
-
-exponent'       = do{ oneOf "eE"
-                    ; f <- sign
-                    ; e <- decimal <?> "exponent"
-                    ; return (power (f e))
-                    }
-                  <?> "exponent"
-                where
-                   power e  | e < 0      = 1.0/power(-e)
-                            | otherwise  = fromInteger (10^e)
-
-
 -- integers and naturals
+natural         = lexeme nat        <?> "natural"
 int             = do{ f <- lexeme sign
                     ; n <- nat
                     ; return (f n)
