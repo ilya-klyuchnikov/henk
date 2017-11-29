@@ -1,16 +1,22 @@
------------------------------------------------------------
---
---
---
------------------------------------------------------------
-module TokenDef (module StdTokenDef,tokenDef) where
+module TokenDef where
 
-import StdTokenDef
 import Parser
 
-tokenDef    = henk
+data TokenDefinition  = TokenDef
+               { commentStart   :: String
+               , commentEnd     :: String
+               , commentLine    :: String
+               , nestedComments :: Bool
+               , identStart     :: Parser Char
+               , identLetter    :: Parser Char
+               , opStart        :: Parser Char
+               , opLetter       :: Parser Char
+               , reservedNames  :: [String]
+               , reservedOpNames:: [String]
+               , caseSensitive  :: Bool
+               } 
 
-henk  = emptyStyle
+henk  = TokenDef
     { commentStart  = "{-"
     , commentEnd  = "-}"
     , commentLine  = "--"
@@ -26,3 +32,5 @@ henk  = emptyStyle
           ]
                 , caseSensitive  = True
     }
+
+tokenDef    = henk

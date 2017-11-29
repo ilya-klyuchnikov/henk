@@ -8,8 +8,7 @@ module ParseToken where
 import Data.Char         (isSpace,digitToInt,isAlpha,toLower,toUpper)
 import Data.List         (nub,sort)
 import Parser
-import StdTokenDef  (TokenDefinition(..))
-import TokenDef     (tokenDef)
+import TokenDef
 
 
 -----------------------------------------------------------
