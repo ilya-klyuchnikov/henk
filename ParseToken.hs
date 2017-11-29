@@ -64,34 +64,6 @@ number base baseDigit
         }
 
 -----------------------------------------------------------
--- Operators & reserved ops
------------------------------------------------------------
-reservedOp name =
-    lexeme $ try $
-    do{ string name
-      ; notFollowedBy (opLetter tokenDef) <?> ("end of " ++ show name)
-      }
-
-operator =
-    lexeme $ try $
-    do{ name <- oper
-      ; if (isReservedOp name)
-         then unexpected ("reserved operator " ++ show name)
-         else return name
-      }
-
-oper =
-    do{ c <- (opStart tokenDef)
-      ; cs <- many (opLetter tokenDef)
-      ; return (c:cs)
-      }
-    <?> "operator"
-
-isReservedOp name =
-    isReserved (sort (reservedOpNames tokenDef)) name
-
-
------------------------------------------------------------
 -- Identifiers & Reserved words
 -----------------------------------------------------------
 reserved name =
