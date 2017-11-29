@@ -6,7 +6,6 @@ data TokenDefinition  = TokenDef
                { commentStart   :: String
                , commentEnd     :: String
                , commentLine    :: String
-               , nestedComments :: Bool
                , identStart     :: Parser Char
                , identLetter    :: Parser Char
                , opStart        :: Parser Char
@@ -19,7 +18,6 @@ henk  = TokenDef
     { commentStart  = "{-"
     , commentEnd  = "-}"
     , commentLine  = "--"
-    , nestedComments= True
     , identStart  = letter
     , identLetter  = alphaNum <|> oneOf "_'"
     , opStart       = opLetter henk

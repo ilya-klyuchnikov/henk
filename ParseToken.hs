@@ -168,22 +168,9 @@ multiLineComment =
        }
 
 inComment
-    | nestedComments tokenDef  = inCommentMulti
-    | otherwise                = inCommentSingle
-
-inCommentMulti
-    =   do{ try (string (commentEnd tokenDef)) ; return () }
-    <|> do{ multiLineComment                     ; inCommentMulti }
-    <|> do{ skipMany1 (noneOf startEnd)          ; inCommentMulti }
-    <|> do{ oneOf startEnd                       ; inCommentMulti }
-    <?> "end of comment"
-    where
-      startEnd   = nub (commentEnd tokenDef ++ commentStart tokenDef)
-
-inCommentSingle
     =   do{ try (string (commentEnd tokenDef)); return () }
-    <|> do{ skipMany1 (noneOf startEnd)         ; inCommentSingle }
-    <|> do{ oneOf startEnd                      ; inCommentSingle }
+    <|> do{ skipMany1 (noneOf startEnd)         ; inComment }
+    <|> do{ oneOf startEnd                      ; inComment }
     <?> "end of comment"
     where
       startEnd   = nub (commentEnd tokenDef ++ commentStart tokenDef)
