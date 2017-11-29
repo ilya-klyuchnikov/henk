@@ -231,17 +231,8 @@ lit = do{i <- natural
 -- Sort
 ----------------------------------------------------------------
 sort :: Parser Expr
-sort = do{s <-    try (sortNum)
-              <|> star
-              <|> box
+sort = do{s <- star <|> box
      ;return $ SortExpr s}
-
-sortNum :: Parser Sort
-sortNum = do{ symbol "*"
-            ; n <- natural
-            ; return $ SortNum n
-            }
-
 
 star :: Parser Sort
 star = do{ symbol "*"

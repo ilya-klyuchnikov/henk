@@ -61,5 +61,4 @@ data Lit
 data Sort
  = Star
  | Box
- | SortNum Integer
  deriving (Show,Eq)

@@ -151,7 +151,6 @@ sort :: Sort -> Doc
 sort s = case s of
  Star      -> text "*"
  Box       -> text "[]"
- SortNum i -> text $ "*"++show i
 
 ----------------------------------------------------------------
 -- Some Sugar
