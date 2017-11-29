@@ -39,7 +39,7 @@ module Parser(
              , many, many1, manyTill
              , sepBy, sepBy1
              , count
-             , chainr1, chainl1
+             , chainr1
              , option, optional
              , choice, between
              , oneOf, noneOf
@@ -160,17 +160,8 @@ count n p           | n <= 0    = return []
 
 
 chainr p op x       = chainr1 p op <|> return x
-chainl p op x       = chainl1 p op <|> return x
 
-chainr1,chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
-chainl1 p op        = do{ x <- p; rest x }
-                    where
-                      rest x    = do{ f <- op
-                                    ; y <- p
-                                    ; rest (f x y)
-                                    }
-                                <|> return x
-
+chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 chainr1 p op        = scan
                     where
                       scan      = do{ x <- p; rest x }
