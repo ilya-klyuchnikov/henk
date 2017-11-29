@@ -36,7 +36,7 @@ module Parser(
 
              --general combinators
              , skipMany, skipMany1
-             , many, many1, manyTill
+             , many, many1
              , sepBy, sepBy1
              , count
              , chainr1
@@ -183,14 +183,6 @@ notFollowedBy :: Parser Char -> Parser ()
 notFollowedBy p     = try (do{ c <- p; unexpected (show [c]) }
                            <|> return ()
                           )
-
-manyTill :: Parser a -> Parser end -> Parser [a]
-manyTill p end      = scan
-                    where
-                      scan  = do{ end; return [] }
-                            <|>
-                              do{ x <- p; xs <- scan; return (x:xs) }
-
 
 lookAhead :: Parser a -> Parser a
 lookAhead p         = do{ state <- getState
