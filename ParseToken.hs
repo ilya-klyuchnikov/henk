@@ -48,13 +48,11 @@ sign            =   (char '-' >> return negate)
 nat             = zeroNumber <|> decimal
 
 zeroNumber      = do{ char '0'
-                    ; hexadecimal <|> octal <|> decimal <|> return 0
+                    ; decimal <|> return 0
                     }
                   <?> ""
 
 decimal         = number 10 digit
-hexadecimal     = do{ oneOf "xX"; number 16 hexDigit }
-octal           = do{ oneOf "oO"; number 8 octDigit  }
 
 number :: Integer -> Parser Char -> Parser Integer
 number base baseDigit
