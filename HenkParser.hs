@@ -114,10 +114,8 @@ piExpr  = do{ (symbol "|~|") <|> try (symbol ("\\/"))
 -- Function Expression
 ----------------------------------------------------------------
 funExpr :: Parser Expr
-funExpr = chainr1 appExpr arrow <?> "function expression"
- where
- arrow = do{symbol "->"; return $ \ex1 ex2 -> PiExpr (TVar Anonymous ex1) ex2}
-
+funExpr = do {as <- (sepBy1 appExpr (symbol "->") <?> "function expression");
+              return $ foldr1 (\ex1 ex2 -> PiExpr (TVar Anonymous ex1) ex2) as}
 
 
 ----------------------------------------------------------------
