@@ -13,8 +13,7 @@ data TokenDefinition  = TokenDef
                , opLetter       :: Parser Char
                , reservedNames  :: [String]
                , reservedOpNames:: [String]
-               , caseSensitive  :: Bool
-               } 
+               }
 
 henk  = TokenDef
     { commentStart  = "{-"
@@ -30,7 +29,6 @@ henk  = TokenDef
     , reservedNames = [ "case", "data", "letrec", "type"
           , "import", "in", "let", "of", "at", "Int"
           ]
-                , caseSensitive  = True
     }
 
 tokenDef    = henk

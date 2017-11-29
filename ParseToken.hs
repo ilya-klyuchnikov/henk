@@ -96,22 +96,9 @@ isReservedOp name =
 -----------------------------------------------------------
 reserved name =
     lexeme $ try $
-    do{ caseString name
+    do{ string name
       ; notFollowedBy (identLetter tokenDef) <?> ("end of " ++ show name)
       }
-
-caseString name
-    | caseSensitive tokenDef  = string name
-    | otherwise               = do{ walk name; return name }
-    where
-      walk []     = return ()
-      walk (c:cs) = do{ caseChar c <?> msg; walk cs }
-
-      caseChar c  | isAlpha c  = char (toLower c) <|> char (toUpper c)
-                  | otherwise  = char c
-
-      msg         = show name
-
 
 identifier =
     lexeme $ try $
@@ -129,11 +116,7 @@ ident
     <?> "identifier"
 
 isReservedName name
-    = isReserved theReservedNames caseName
-    where
-      caseName      | caseSensitive tokenDef  = name
-                    | otherwise               = map toLower name
-
+    = isReserved theReservedNames name
 
 isReserved names name
     = scan names
@@ -144,9 +127,7 @@ isReserved names name
                         EQ  -> True
                         GT  -> False
 
-theReservedNames
-    | caseSensitive tokenDef  = sortedNames
-    | otherwise               = map (map toLower) sortedNames
+theReservedNames = sortedNames
     where
       sortedNames   = sort (reservedNames tokenDef)
 
