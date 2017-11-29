@@ -3,6 +3,8 @@ module ParserTests where
 import Test.HUnit
 import ParseError
 import Parser
+import ParseToken
+import HenkParser
 
 parse1 :: Parser a -> Source -> Either ParseError a
 parse1 p s = parse p "" s
@@ -40,12 +42,20 @@ example01 =
   ((parsePair (char 'a') (char 'b')) <|> (parsePair (char 'c') (char 'd')))
   "xxx"
 
-brackets :: Parser [Char]
-brackets = do {open <- char '(';
-               inner <- brackets;
+brackets' :: Parser [Char]
+brackets' = do {open <- char '(';
+               inner <- brackets';
                close <- char ')';
                return ([open] ++ inner ++ [close])} <|> (return "")
 
-example02 = parse1 (try brackets) "(((a)))"
+example02 = parse1 (try brackets') "(((a)))"
 
 allTests = TestList [test1, test21, test22, test3, test4]
+
+dataBoolDecl = "data Bool : * = { True : Bool ;  False : Bool }"
+
+exampleA = parse1 program dataBoolDecl
+
+exampleB = parse1 expr "Bool"
+
+exampleC = parse1 expr "of"
