@@ -135,8 +135,8 @@ theReservedNames = sortedNames
 -----------------------------------------------------------
 -- White space & symbols
 -----------------------------------------------------------
-symbol name
-    = lexeme (string name)
+-- used a lot to remove whiteSpaces
+symbol name = lexeme (string name)
 
 lexeme p
     = do{ x <- p; whiteSpace; return x  }
