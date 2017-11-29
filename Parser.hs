@@ -59,11 +59,6 @@ module Parser(
              , try
              , token --obsolete, use try instead
              , onFail, unexpected
-
-             , getPosition, setPosition
-             , getInput, setInput
-
-             , getState, setState
              ) where
 
 import ParseError
@@ -183,38 +178,6 @@ notFollowedBy :: Parser Char -> Parser ()
 notFollowedBy p     = try (do{ c <- p; unexpected (show [c]) }
                            <|> return ()
                           )
-
-lookAhead :: Parser a -> Parser a
-lookAhead p         = do{ state <- getState
-                        ; x <- p
-                        ; setState state
-                        ; return x
-                        }
-
-
------------------------------------------------------------
--- Parser state combinators
------------------------------------------------------------
-getPosition :: Parser SourcePosition
-getPosition         = do{ state <- getState; return (statePos state) }
-
-getInput :: Parser Source
-getInput            = do{ state <- getState; return (stateInput state) }
-
-
-setPosition :: SourcePosition -> Parser ()
-setPosition pos     = do{ updateState (\(ST input _) -> ST input pos)
-                        ; return ()
-                        }
-
-setInput :: Source -> Parser ()
-setInput input      = do{ updateState (\(ST _ pos)   -> ST input pos)
-                        ; return ()
-                        }
-
-getState            = updateState id
-setState state      = updateState (const state)
-
 
 
 
@@ -401,12 +364,6 @@ onFail (PT p) msg
                                   | otherwise -> Ok x state1 (setExpectError msg err)
           other       -> other
       )
-
-
-updateState :: (State -> State) -> Parser State
-updateState f
-    = PT (\state -> Empty (Ok state (f state) (unknownError state)))
-
 
 unexpected :: String -> Parser a
 unexpected msg

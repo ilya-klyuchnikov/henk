@@ -102,7 +102,7 @@ lamExpr =  do{symbol "\\" <|> symbol "/\\"
 -- Pi Expression / ForAll Expression
 ----------------------------------------------------------------
 piExpr :: Parser Expr
-piExpr  = do{ (symbol "|~|") <|> token (symbol ("\\/"))
+piExpr  = do{ (symbol "|~|") <|> try (symbol ("\\/"))
           ;tvs <- sepBy1 bindVar comma
           ;symbol "."
           ;e <- expr
