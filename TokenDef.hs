@@ -3,9 +3,7 @@ module TokenDef where
 import Parser
 
 data TokenDefinition  = TokenDef
-               { commentStart   :: String
-               , commentEnd     :: String
-               , commentLine    :: String
+               { commentLine    :: String
                , identStart     :: Parser Char
                , identLetter    :: Parser Char
                , opStart        :: Parser Char
@@ -15,9 +13,7 @@ data TokenDefinition  = TokenDef
                }
 
 henk  = TokenDef
-    { commentStart  = "{-"
-    , commentEnd  = "-}"
-    , commentLine  = "--"
+    { commentLine  = "--"
     , identStart  = letter
     , identLetter  = alphaNum <|> oneOf "_'"
     , opStart       = opLetter henk

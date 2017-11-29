@@ -115,15 +115,7 @@ lexeme p
 
 
 --whiteSpace
-whiteSpace
-    | noLine && noMulti  = skipMany (simpleSpace <?> "")
-    | noLine             = skipMany (simpleSpace <|> multiLineComment <?> "")
-    | noMulti            = skipMany (simpleSpace <|> oneLineComment <?> "")
-    | otherwise          = skipMany (simpleSpace <|> oneLineComment <|> multiLineComment <?> "")
-    where
-      noLine  = null (commentLine tokenDef)
-      noMulti = null (commentStart tokenDef)
-
+whiteSpace = skipMany (simpleSpace <|> oneLineComment <?> "")
 
 simpleSpace =
     skipMany1 (satisfy isSpace)
@@ -133,16 +125,3 @@ oneLineComment =
       ; skipMany (satisfy (/= '\n'))
       ; return ()
       }
-
-multiLineComment =
-    do { try (string (commentStart tokenDef))
-       ; inComment
-       }
-
-inComment
-    =   do{ try (string (commentEnd tokenDef)); return () }
-    <|> do{ skipMany1 (noneOf startEnd)         ; inComment }
-    <|> do{ oneOf startEnd                      ; inComment }
-    <?> "end of comment"
-    where
-      startEnd   = nub (commentEnd tokenDef ++ commentStart tokenDef)
