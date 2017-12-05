@@ -3,8 +3,6 @@ module HenkInt where
 import HenkAS
 import HenkPP(expr2string)
 import TermSupport
-import HenkParser(expr) --tijdelijk
-import Parser       --tijdelijk
 import Control.Monad
 import Debug.Trace
 
