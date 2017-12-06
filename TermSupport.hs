@@ -24,8 +24,8 @@ data RedexInf = NoRedex
  deriving (Show,Eq)
 
 
-isRedex :: DeltaRules -> Expr -> RedexInf
-isRedex deltaRules expr = case expr of
+redex :: DeltaRules -> Expr -> RedexInf
+redex deltaRules expr = case expr of
  AppExpr (LamExpr _ _) _  -> BetaRedex
  CaseExpr _ _ _           -> CaseRedex
  VarExpr tv               -> case lookup'' tv deltaRules of
@@ -77,15 +77,15 @@ isSort expr = case expr of
 hnf :: DeltaRules -> Expr -> Bool
 hnf deltaRules expr = case expr of
   LamExpr tv ex1  -> hnf deltaRules ex1
-  AppExpr _  _    -> not $ or (map (\ex -> (isRedex deltaRules ex)/=NoRedex) [leftMostApp expr,leftMost expr])
-  _               -> isRedex deltaRules expr == NoRedex
+  AppExpr _  _    -> not $ or (map (\ex -> (redex deltaRules ex)/=NoRedex) [leftMostApp expr,leftMost expr])
+  _               -> redex deltaRules expr == NoRedex
 
 
 whnf :: DeltaRules -> Expr -> Bool
 whnf deltaRules expr = case expr of
   LamExpr _  _    -> True
-  AppExpr _  _    -> not $ or (map (\ex -> (isRedex deltaRules ex)/=NoRedex) [leftMostApp expr, leftMost expr])
-  _               -> isRedex deltaRules expr == NoRedex
+  AppExpr _  _    -> not $ or (map (\ex -> (redex deltaRules ex)/=NoRedex) [leftMostApp expr, leftMost expr])
+  _               -> redex deltaRules expr == NoRedex
 
 --------------------------------------------------------------------------------
 -- Extracting Sub Expressions

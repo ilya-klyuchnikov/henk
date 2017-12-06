@@ -77,7 +77,7 @@ eval dr ex
  | redexinf/=NoRedex                = mplus (eval dr reduced) (Just reduced)
  | isApp  ex                        = evalApp dr ex
  | otherwise                        = Nothing
- where redexinf = isRedex dr ex
+ where redexinf = redex dr ex
        reduced  = (reduceRedex dr redexinf ex)
 
 
@@ -110,7 +110,7 @@ weak dr ex
  | redexinf/=NoRedex                = mplus (weak dr reduced) (Just reduced)
  | isApp  ex                        = weakApp dr ex
  | otherwise                        = Nothing
- where redexinf = isRedex dr ex
+ where redexinf = redex dr ex
        reduced  = (reduceRedex dr redexinf ex)
 
 
@@ -148,7 +148,7 @@ strong dr ex
  | isApp  ex                               = strongApp  dr ex
  | isLam    ex                             = strongLam  dr ex
  | otherwise                               = Nothing
- where redexinf = isRedex dr ex
+ where redexinf = redex dr ex
        reduced  = (reduceRedex dr redexinf ex)
 
 strongApp dr ex@(AppExpr ex1 ex2) =
