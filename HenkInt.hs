@@ -28,7 +28,7 @@ prog2DeltaRules :: Program -> DeltaRules
 prog2DeltaRules (Prog _ vdecls) = map vDecl2DeltaRule vdecls
 
 vDecl2DeltaRule :: VDeclaration -> DeltaRule
-vDecl2DeltaRule (VDecl tv ex)  = DeltaRule tv ex
+vDecl2DeltaRule (VDecl tv ex)  = MkDeltaRule tv ex
 
 
 --------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ lookupA' ex []    = Nothing
 
 
 reduceDeltaRule :: Expr -> DeltaRule -> Expr
-reduceDeltaRule _ (DeltaRule _ ex2) = ex2
+reduceDeltaRule _ (MkDeltaRule _ ex2) = ex2
 
 --------------------------------------------------------------------------------
 -- eval Reduction

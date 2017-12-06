@@ -4,7 +4,7 @@ import HenkAS
 --------------------------------------------------------------------------------
 -- Rules
 --------------------------------------------------------------------------------
-data DeltaRule       = DeltaRule TVariable Expr
+data DeltaRule       = MkDeltaRule TVariable Expr
  deriving (Show,Eq)
 type DeltaRules      = [DeltaRule]
 
@@ -36,7 +36,7 @@ isRedex deltaRules expr = case expr of
 
 
 lookup'' :: TVariable -> DeltaRules -> Maybe DeltaRule
-lookup'' tv@(TVar (Var v) _) (r@(DeltaRule ex1 _):rs) =
+lookup'' tv@(TVar (Var v) _) (r@(MkDeltaRule ex1 _):rs) =
  case ex1 of
   (TVar (Var v1) _) | (v1==v)   -> Just r
                     | otherwise -> lookup'' tv rs
