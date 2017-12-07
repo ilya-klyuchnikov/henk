@@ -160,8 +160,8 @@ class StrongSubstC t where
 instance StrongSubstC Expr where
  applySStrongSubst ssubst@(Sub (TVar vars _) exprs) expr = case expr of
   AppExpr exa exb                                 -> AppExpr (applySStrongSubst ssubst exa) (applySStrongSubst ssubst exb)
-  LamExpr tv ex                                   -> lamSStrongSubst ssubst (LamExpr tv ex)
-  PiExpr  tv ex                                   -> piSStrongSubst ssubst (PiExpr tv ex)
+  LamExpr tv ex                                   -> lamSStrongSubst ssubst tv ex
+  PiExpr  tv ex                                   -> piSStrongSubst ssubst tv ex
   VarExpr tvv@(TVar var expr1)      | (var==vars) -> exprs
                                     | otherwise   -> VarExpr (TVar var (applySStrongSubst ssubst expr1))
   CaseExpr expr1 alts t                           -> CaseExpr (applySStrongSubst ssubst expr1) (applySStrongSubst ssubst alts) (applySStrongSubst ssubst t)
@@ -171,30 +171,30 @@ instance StrongSubstC Expr where
 freshFreeVars :: [Variable]
 freshFreeVars = [Var $ "v"++(show i) | i <-[1..]]
 
-lamSStrongSubst :: SSubst -> Expr -> Expr
-lamSStrongSubst ssubst@(Sub (TVar vars _) exprs) (LamExpr tv@(TVar var expr1) expr2)
+lamSStrongSubst :: SSubst -> TVariable -> Expr -> Expr
+lamSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
  | var==vars                            = LamExpr (TVar var (applySStrongSubst ssubst expr1)) expr2
  | not $ vars `elem` freeVarsExpr2      = LamExpr (TVar var (applySStrongSubst ssubst expr1)) expr2
  | not $ var  `elem` freeVarsExprs      = LamExpr (TVar var (applySStrongSubst ssubst expr1)) (applySStrongSubst ssubst expr2)
  | otherwise                            = lamSStrongSubst
                                            ssubst
-                                           (LamExpr (TVar freshFreeVar expr1)
-                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2))
+                                           (TVar freshFreeVar expr1)
+                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2)
  where
   freeVarsExprs = (exFreeVars exprs)
   freeVarsExpr2 = (exFreeVars expr2)
   freeVars      = freeVarsExprs ++ freeVarsExpr2
   freshFreeVar  = head(filter (\v->not(v `elem` freeVars)) freshFreeVars)
 
-piSStrongSubst :: SSubst -> Expr -> Expr
-piSStrongSubst ssubst@(Sub (TVar vars _) exprs) (PiExpr tv@(TVar var expr1) expr2)
+piSStrongSubst :: SSubst -> TVariable -> Expr -> Expr
+piSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
  | var==vars                            = PiExpr (TVar var (applySStrongSubst ssubst expr1)) expr2
  | not $ vars `elem` freeVarsExpr2      = PiExpr (TVar var (applySStrongSubst ssubst expr1)) expr2
  | not $ var  `elem` freeVarsExprs      = PiExpr (TVar var (applySStrongSubst ssubst expr1)) (applySStrongSubst ssubst expr2)
  | otherwise                            = piSStrongSubst
                                            ssubst
-                                           (PiExpr (TVar freshFreeVar expr1)
-                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2))
+                                           (TVar freshFreeVar expr1)
+                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2)
  where
   freeVarsExprs = (exFreeVars exprs)
   freeVarsExpr2 = (exFreeVars expr2)
