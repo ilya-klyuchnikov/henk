@@ -171,6 +171,9 @@ instance StrongSubstC Expr where
 freshFreeVars :: [Variable]
 freshFreeVars = [Var $ "v"++(show i) | i <-[1..]]
 
+freshFreeVar :: [Variable] -> Variable
+freshFreeVar vs = head(filter (\v->not(v `elem` vs)) freshFreeVars)
+
 lamSStrongSubst :: SSubst -> TVariable -> Expr -> Expr
 lamSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
  | var==vars                            = LamExpr (TVar var (applySStrongSubst ssubst expr1)) expr2
@@ -178,13 +181,13 @@ lamSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
  | not $ var  `elem` freeVarsExprs      = LamExpr (TVar var (applySStrongSubst ssubst expr1)) (applySStrongSubst ssubst expr2)
  | otherwise                            = lamSStrongSubst
                                            ssubst
-                                           (TVar freshFreeVar expr1)
-                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2)
+                                           freshTV
+                                            ((applySStrongSubst (Sub tv (VarExpr freshTV))) expr2)
  where
   freeVarsExprs = (exFreeVars exprs)
   freeVarsExpr2 = (exFreeVars expr2)
   freeVars      = freeVarsExprs ++ freeVarsExpr2
-  freshFreeVar  = head(filter (\v->not(v `elem` freeVars)) freshFreeVars)
+  freshTV       = (TVar (freshFreeVar freeVars) expr1)
 
 piSStrongSubst :: SSubst -> TVariable -> Expr -> Expr
 piSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
@@ -193,13 +196,13 @@ piSStrongSubst ssubst@(Sub (TVar vars _) exprs) tv@(TVar var expr1) expr2
  | not $ var  `elem` freeVarsExprs      = PiExpr (TVar var (applySStrongSubst ssubst expr1)) (applySStrongSubst ssubst expr2)
  | otherwise                            = piSStrongSubst
                                            ssubst
-                                           (TVar freshFreeVar expr1)
-                                            ((applySStrongSubst (Sub tv (VarExpr (TVar freshFreeVar expr1)))) expr2)
+                                           freshTV
+                                            ((applySStrongSubst (Sub tv (VarExpr freshTV))) expr2)
  where
   freeVarsExprs = (exFreeVars exprs)
   freeVarsExpr2 = (exFreeVars expr2)
   freeVars      = freeVarsExprs ++ freeVarsExpr2
-  freshFreeVar  = head(filter (\v->not(v `elem` freeVars)) freshFreeVars)
+  freshTV       = (TVar (freshFreeVar freeVars) expr1)
 
 
 instance StrongSubstC CaseAlt where
