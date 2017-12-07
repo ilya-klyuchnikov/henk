@@ -4,10 +4,6 @@ import HenkAS
 import HenkPP(var2string)
 import TermSupport(DeltaRules,SSubst(..),Subst,applyStrongSubst)
 import Control.Monad(mapAndUnzipM,foldM)
-import Parser(parse)
-import HenkParser(single_expr)
-import HenkPP(expr2string)
-trace x y = y
 
 type Annotation  = (Variable,Expr)
 type Annotations = [Annotation]
@@ -173,5 +169,5 @@ alt p (Alt dc tcas dcas res) =
       ;return $ Alt dc tcas dcas res}
 
 match :: Expr -> [TVariable] -> [TVariable]
-match (PiExpr ptv@(TVar v t) expr) (tv@(TVar v1 _):vs) = (TVar v1 t) : (match (trace (expr2string $  (applyStrongSubst  [Sub ptv $ VarExpr (TVar v1 t)] expr)) (applyStrongSubst  [Sub ptv $ VarExpr (TVar v1 t)] expr)) vs)
+match (PiExpr ptv@(TVar v t) expr) (tv@(TVar v1 _):vs) = (TVar v1 t) : (match (applyStrongSubst  [Sub ptv $ VarExpr (TVar v1 t)] expr) vs)
 match _ _ = []
