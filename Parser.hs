@@ -289,11 +289,6 @@ instance Monad Parser where
       )
 
 
-  fail msg
-    = PT (\state ->
-        Empty (Error (newErrorMessage (Msg msg) (statePos state))))
-
-
 mergeErrorReply err1 reply
   = case reply of
       Ok x state err2 -> Ok x state (mergeError err1 err2)

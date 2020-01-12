@@ -1,5 +1,6 @@
  module HenkPP where
 
+import Prelude hiding ((<>))
 import Pretty -- John Hughes pretty printing library
 import HenkAS
 

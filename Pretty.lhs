@@ -152,7 +152,7 @@ Relative to John's original paper, there are the following new features:
 
 
 \begin{code}
-module Pretty (
+module Pretty (        
         Doc,            -- Abstract
         Mode(..), TextDetails(..),
 
@@ -174,6 +174,8 @@ module Pretty (
 --      renderStyle,            -- Haskell 1.3 only
         render, fullRender
   ) where
+
+import Prelude hiding ((<>))
 
 -- Don't import Util( assertPanic ) because it makes a loop in the module structure
 
