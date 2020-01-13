@@ -174,7 +174,7 @@ strongLam dr (LamExpr (TVar var exv) ex)
 
 -- Reducing using the normal strategy until a normal form is reached
 reduce_to_nf :: DeltaRules -> Expr -> Expr
-reduce_to_nf dr ex = case  mplus (strong dr mnf) (Just mnf) of
+reduce_to_nf dr ex = case (strong dr mnf) of
                       Just exr  -> exr
-                      Nothing   -> ex
+                      Nothing   -> mnf
           where mnf = reduce_to_mnf dr ex
