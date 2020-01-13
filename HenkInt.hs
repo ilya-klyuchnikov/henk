@@ -16,7 +16,7 @@ intmain deltaRules program
                   Nothing         -> error "main not defined!!"
       ;putStr $ "\nEvaluating: \n" ++ HenkPP.expr2string ex ++ "\n\n"
       ;nf     <- return $ reduce_to_mnf deltaRules ex
-      ;putStr $ "Result: \n" ++ HenkPP.expr2string nf
+      ;putStr $ "Result: \n" ++ HenkPP.expr2string nf ++ "\n"
       ;return nf
       }
 
