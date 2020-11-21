@@ -45,10 +45,7 @@ buildExpressionParser operators simpleExpr
               postfixOp  = choice postfix <?> ""
 
               ambigious assoc op= try $
-                                  do{ op; fail ("ambiguous use of a " ++ assoc
-                                                 ++ " associative operator")
-                                    }
-
+                                  do { op; error ("ambiguous use of a " ++ assoc ++ " associative operator")}
               ambigiousRight    = ambigious "right" rassocOp
               ambigiousLeft     = ambigious "left" lassocOp
               ambigiousNon      = ambigious "non" nassocOp

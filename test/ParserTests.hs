@@ -1,6 +1,9 @@
-module ParserTests where
+module Main where
 
+import Test.Framework
+import Test.Framework.Providers.HUnit
 import Test.HUnit
+
 import ParseError
 import Parser
 import ParseToken
@@ -10,7 +13,7 @@ parse1 :: Parser a -> Source -> Either ParseError a
 parse1 p s = parse p "" s
 
 
-testParsing :: (Eq a, Show a) => String -> Parser a -> Source -> a -> Test
+-- testParsing :: (Eq a, Show a) => String -> Parser a -> Source -> a -> Test
 testParsing msg parser input expected =
   TestCase (assertEqual msg (Right expected) (parse1 parser input))
 
@@ -50,7 +53,7 @@ brackets' = do {open <- char '(';
 
 example02 = parse1 (try brackets') "(((a)))"
 
-allTests = TestList [test1, test21, test22, test3, test4]
+allTests = hUnitTestToTests $ TestList [test1, test21, test22, test3, test4]
 
 dataBoolDecl = "data Bool : * = { True : Bool ;  False : Bool }"
 
@@ -59,3 +62,5 @@ exampleA = parse1 program dataBoolDecl
 exampleB = parse1 expr "Bool"
 
 exampleC = parse1 expr "of"
+
+main = defaultMain allTests

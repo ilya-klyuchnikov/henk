@@ -1,0 +1,69 @@
+cabal-version: 3.0
+
+name:           henk
+version:        1.0
+build-type:     Simple
+
+library henk-lib
+  exposed-modules:
+      Classification
+      HenkAS
+      HenkInt
+      HenkParser
+      HenkPP
+      HenkTC
+      HenkTI
+      ParseError
+      ParseExpr
+      Parser
+      ParseToken
+      TermSupport
+      TokenDef
+      TypeSystems
+  hs-source-dirs:
+      src
+  build-depends:
+      base == 4.13.0.0,
+      pretty >=1.1.3.5
+  default-language: Haskell2010
+
+executable henk
+  main-is:
+      Main.hs
+  buildable:
+      True
+  other-modules:
+      Classification
+      HenkAS
+      HenkInt
+      HenkParser
+      HenkPP
+      HenkTC
+      HenkTI
+      ParseError
+      ParseExpr
+      Parser
+      ParseToken
+      TermSupport
+      TokenDef
+      TypeSystems
+  hs-source-dirs:
+      src
+  build-depends:
+      base == 4.13.0.0,
+      pretty >=1.1.3.5
+  ghc-options: -main-is Main
+  default-language: Haskell2010
+
+test-suite henk-test
+  type: exitcode-stdio-1.0
+  main-is: ParserTests.hs
+  hs-source-dirs:
+      test
+  build-depends:
+      base == 4.13.0.0,
+      henk-lib:lib,
+      test-framework == 0.8.2.0,
+      test-framework-hunit == 0.3.0.2,
+      HUnit == 1.6.1.0
+  default-language: Haskell2010
